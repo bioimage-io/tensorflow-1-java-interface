@@ -78,7 +78,7 @@ public class Tensorflow1Interface implements DeepLearningInterface
 	}
 
 	@Override
-	public List<Tensor> run(List<Tensor> inputTensors, List<Tensor> outputTensors) throws RunModelException {
+	public List<Tensor<?>> run(List<Tensor<?>> inputTensors, List<Tensor<?>> outputTensors) throws RunModelException {
 		Session session = model.session();
 		Session.Runner runner = session.runner();
         List<String> inputListNames = new ArrayList<String>();
@@ -117,7 +117,7 @@ public class Tensorflow1Interface implements DeepLearningInterface
 	 * @throws RunModelException If the number of tensors expected is not the same as the number of
 	 * 	Tensors outputed by the model
 	 */
-	public static List<Tensor> fillOutputTensors(List<org.tensorflow.Tensor<?>> outputNDArrays, List<Tensor> outputTensors) throws RunModelException{
+	public static List<Tensor<?>> fillOutputTensors(List<org.tensorflow.Tensor<?>> outputNDArrays, List<Tensor<?>> outputTensors) throws RunModelException{
 		if (outputNDArrays.size() != outputTensors.size())
 			throw new RunModelException(outputNDArrays.size(), outputTensors.size());
 		for (int i = 0; i < outputNDArrays.size(); i ++) {
