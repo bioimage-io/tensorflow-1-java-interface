@@ -5,11 +5,14 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.bioimageanalysis.icy.deeplearning.utils.IndexingUtils;
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
 
+import net.imglib2.Cursor;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -66,16 +69,26 @@ public final class ImgLib2Builder
      *        The tensor data is read from.
      * @return The INDArray built from the tensor of type {@link DataType#UBYTE}.
      */
-    private static <T extends Type<T>> Img<ByteType> buildFromTensorByte(Tensor<UInt8> tensor)
+    private static Img<ByteType> buildFromTensorByte(Tensor<UInt8> tensor)
     {
     	long[] tensorShape = tensor.shape();
+    	final ImgFactory< ByteType > factory = new CellImgFactory<>( new ByteType(), 5 );
+        final Img< ByteType > outputImg = (Img<ByteType>) factory.create(tensorShape);
+    	Cursor<ByteType> tensorCursor= outputImg.cursor();
 		int totalSize = 1;
 		for (long i : tensorShape) {totalSize *= i;}
-        byte[] flatImageArray = new byte[totalSize];
-		ByteBuffer outBuff = ByteBuffer.wrap(flatImageArray);
+        byte[] flatArr = new byte[totalSize];
+		ByteBuffer outBuff = ByteBuffer.wrap(flatArr);
 	 	tensor.writeTo(outBuff);
 	 	outBuff = null;
-		return ArrayImgs.bytes(flatImageArray, tensorShape);
+		while (tensorCursor.hasNext()) {
+			tensorCursor.fwd();
+			long[] cursorPos = tensorCursor.positionAsLongArray();
+        	int flatPos = IndexingUtils.multidimensionalIntoFlatIndex(cursorPos, tensorShape);
+        	byte val = flatArr[flatPos];
+        	tensorCursor.get().set(val);
+		}
+	 	return outputImg;
 	}
 
     /**
@@ -85,16 +98,26 @@ public final class ImgLib2Builder
      *        The tensor data is read from.
      * @return The sequence built from the tensor of type {@link DataType#INT}.
      */
-    private static <T extends Type<T>> Img<IntType> buildFromTensorInt(Tensor<Integer> tensor)
+    private static Img<IntType> buildFromTensorInt(Tensor<Integer> tensor)
     {
-		long[] tensorShape = tensor.shape();
+    	long[] tensorShape = tensor.shape();
+    	final ImgFactory< IntType > factory = new CellImgFactory<>( new IntType(), 5 );
+        final Img< IntType > outputImg = (Img<IntType>) factory.create(tensorShape);
+    	Cursor<IntType> tensorCursor= outputImg.cursor();
 		int totalSize = 1;
 		for (long i : tensorShape) {totalSize *= i;}
-    	int[] flatImageArray = new int[totalSize];
-    	IntBuffer outBuff = IntBuffer.wrap(flatImageArray);
+        int[] flatArr = new int[totalSize];
+        IntBuffer outBuff = IntBuffer.wrap(flatArr);
 	 	tensor.writeTo(outBuff);
 	 	outBuff = null;
-		return ArrayImgs.ints(flatImageArray, tensorShape);
+		while (tensorCursor.hasNext()) {
+			tensorCursor.fwd();
+			long[] cursorPos = tensorCursor.positionAsLongArray();
+        	int flatPos = IndexingUtils.multidimensionalIntoFlatIndex(cursorPos, tensorShape);
+        	int val = flatArr[flatPos];
+        	tensorCursor.get().set(val);
+		}
+	 	return outputImg;
     }
 
     /**
@@ -104,16 +127,26 @@ public final class ImgLib2Builder
      *        The tensor data is read from.
      * @return The INDArray built from the tensor of type {@link DataType#FLOAT}.
      */
-    private static <T extends Type<T>> Img<FloatType> buildFromTensorFloat(Tensor<Float> tensor)
+    private static Img<FloatType> buildFromTensorFloat(Tensor<Float> tensor)
     {
-		long[] tensorShape = tensor.shape();
+    	long[] tensorShape = tensor.shape();
+    	final ImgFactory< FloatType > factory = new CellImgFactory<>( new FloatType(), 5 );
+        final Img< FloatType > outputImg = (Img<FloatType>) factory.create(tensorShape);
+    	Cursor<FloatType> tensorCursor= outputImg.cursor();
 		int totalSize = 1;
 		for (long i : tensorShape) {totalSize *= i;}
-		float[] flatImageArray = new float[totalSize];
-		FloatBuffer outBuff = FloatBuffer.wrap(flatImageArray);
+        float[] flatArr = new float[totalSize];
+        FloatBuffer outBuff = FloatBuffer.wrap(flatArr);
 	 	tensor.writeTo(outBuff);
 	 	outBuff = null;
-		return ArrayImgs.floats(flatImageArray, tensorShape);
+		while (tensorCursor.hasNext()) {
+			tensorCursor.fwd();
+			long[] cursorPos = tensorCursor.positionAsLongArray();
+        	int flatPos = IndexingUtils.multidimensionalIntoFlatIndex(cursorPos, tensorShape);
+        	float val = flatArr[flatPos];
+        	tensorCursor.get().set(val);
+		}
+	 	return outputImg;
     }
 
     /**
@@ -123,15 +156,25 @@ public final class ImgLib2Builder
      *        The tensor data is read from.
      * @return The INDArray built from the tensor of type {@link DataType#DOUBLE}.
      */
-    private static <T extends Type<T>> Img<DoubleType> buildFromTensorDouble(Tensor<Double> tensor)
+    private static Img<DoubleType> buildFromTensorDouble(Tensor<Double> tensor)
     {
-		long[] tensorShape = tensor.shape();
+    	long[] tensorShape = tensor.shape();
+    	final ImgFactory< DoubleType > factory = new CellImgFactory<>( new DoubleType(), 5 );
+        final Img< DoubleType > outputImg = (Img<DoubleType>) factory.create(tensorShape);
+    	Cursor<DoubleType> tensorCursor= outputImg.cursor();
 		int totalSize = 1;
 		for (long i : tensorShape) {totalSize *= i;}
-		double[] flatImageArray = new double[totalSize];
-		DoubleBuffer outBuff = DoubleBuffer.wrap(flatImageArray);
+		double[] flatArr = new double[totalSize];
+        DoubleBuffer outBuff = DoubleBuffer.wrap(flatArr);
 	 	tensor.writeTo(outBuff);
 	 	outBuff = null;
-		return ArrayImgs.doubles(flatImageArray, tensorShape);
+		while (tensorCursor.hasNext()) {
+			tensorCursor.fwd();
+			long[] cursorPos = tensorCursor.positionAsLongArray();
+        	int flatPos = IndexingUtils.multidimensionalIntoFlatIndex(cursorPos, tensorShape);
+        	double val = flatArr[flatPos];
+        	tensorCursor.get().set(val);
+		}
+	 	return outputImg;
     }
 }
