@@ -3,12 +3,12 @@ package org.bioimageanalysis.icy.deeplearning.tensorflow.v1;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bioimageanalysis.icy.deeplearning.engine.DeepLearningEngineInterface;
 import org.bioimageanalysis.icy.deeplearning.exceptions.LoadModelException;
 import org.bioimageanalysis.icy.deeplearning.exceptions.RunModelException;
 import org.bioimageanalysis.icy.deeplearning.tensor.Tensor;
 import org.bioimageanalysis.icy.deeplearning.tensorflow.v1.tensor.ImgLib2Builder;
 import org.bioimageanalysis.icy.deeplearning.tensorflow.v1.tensor.TensorBuilder;
-import org.bioimageanalysis.icy.deeplearning.utils.DeepLearningInterface;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.framework.MetaGraphDef;
@@ -26,7 +26,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @see TensorBuilder TensorBuilder: Create tensors from images and sequences.
  * @author Carlos Garcia Lopez de Haro and Daniel Felipe Gonzalez Obando
  */
-public class Tensorflow1Interface implements DeepLearningInterface
+public class Tensorflow1Interface implements DeepLearningEngineInterface
 {
     private static final String[] MODEL_TAGS = {"serve", "inference", "train", "eval", "gpu", "tpu"};
 
