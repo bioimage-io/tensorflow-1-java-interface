@@ -117,14 +117,16 @@
 	</ciManagement>
 
 	<properties>
-		<dl-modelrunner.version>0.1.0</dl-modelrunner.version>
-		<protobuf.version>3.2.0</protobuf.version>
 		<package-name>io.bioimage.modelrunner.tensorflow.v1</package-name>
+
 		<license.licenseName>bsd_3</license.licenseName>
 		<license.copyrightOwners>Institut Pasteur and BioImage.IO developers.</license.copyrightOwners>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
+		<dl-modelrunner.version>0.1.0</dl-modelrunner.version>
+		<protobuf.version>3.2.0</protobuf.version>
 	</properties>
 
 	<repositories>
