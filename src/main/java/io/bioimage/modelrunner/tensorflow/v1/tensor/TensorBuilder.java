@@ -1,13 +1,11 @@
-package org.bioimageanalysis.icy.deeplearning.tensorflow.v1.tensor;
+package io.bioimage.modelrunner.tensorflow.v1.tensor;
+
+import io.bioimage.modelrunner.utils.IndexingUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import org.bioimageanalysis.icy.deeplearning.utils.IndexingUtils;
-import org.tensorflow.Tensor;
-import org.tensorflow.types.UInt8;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
@@ -19,6 +17,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
+
+import org.tensorflow.Tensor;
+import org.tensorflow.types.UInt8;
 
 /**
  * A TensorFlow {@link Tensor} builder for {@link INDArray} and {@link org.bioimageanalysis.icy.deeplearning.tensor.Tensor} objects.
@@ -44,7 +45,8 @@ public final class TensorBuilder
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
-    public static Tensor<?> build(org.bioimageanalysis.icy.deeplearning.tensor.Tensor tensor)
+		public static Tensor<?> build(
+			io.bioimage.modelrunner.tensor.Tensor tensor)
     {
     	return build(tensor.getData());
     }

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>31.1.0</version>
+		<version>33.2.0</version>
 		<relativePath />
 	</parent>
-    
-    <artifactId>tensor-flow-1-interface</artifactId>
-    <version>1.0.0</version>
 
-    <name>TensorFlow 1 engine for DL-model-runner</name>
-    <description>This project complements the DL-model runner acting as the engine that works loading models 
+	<groupId>io.bioimage</groupId>
+	<artifactId>dl-modelrunner-tensorflow-1</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+
+	<name>TensorFlow 1 engine for DL-model-runner</name>
+	<description>This project complements the DL-model runner acting as the engine that works loading models 
 	and making inference with Java API for Tensorflow 1.
 	</description>
-	<url>https://gitlab.pasteur.fr/bia/tensorflow-1-interface</url> 
+	<url>https://gitlab.pasteur.fr/bia/tensorflow-1-interface</url>
 	<inceptionYear>2022</inceptionYear>
 	<organization>
-		<name>Icy Bioimaging</name>
-		<url>https://icy.bioimageanalysis.org/</url>
+		<name>BioImage.io</name>
+		<url>https://bioimage.io/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -30,6 +30,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<developers>
 		<developer>
 			<id>carlosuc3m</id>
@@ -77,27 +78,36 @@
 			</roles>
 		</developer>
 	</developers>
+	<contributors>
+		<contributor>
+			<name>Curtis Rueden</name>
+			<url>https://github.com/ctrueden</url>
+			<properties>
+				<id>ctrueden</id>
+			</properties>
+		</contributor>
+		<contributor>
+			<name>Mark Hiner</name>
+			<url>https://github.com/hinerm</url>
+			<properties>
+				<id>hinerm</id>
+			</properties>
+		</contributor>
+	</contributors>
 
 	<mailingLists>
 		<mailingList>
 			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/tag/deeplearning-model-runner</archive>
+			<archive>https://forum.image.sc/tag/bioimage-io</archive>
 		</mailingList>
 	</mailingLists>
 
-	<contributors>
-		<contributor>
-	    	<name>None</name>
-		</contributor>
-	</contributors>
-
 	<scm>
-		<connection>scm:git:git://gitlab.pasteur.fr/bia/tensorflow-1-interface</connection>
+		<connection>scm:git:https://gitlab.pasteur.fr/bia/tensorflow-1-interface</connection>
 		<developerConnection>scm:git:git@gitlab.pasteur.fr:bia/tensorflow-1-interface</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://gitlab.pasteur.fr/bia/tensorflow-1-interface</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://gitlab.pasteur.fr/bia/tensorflow-1-interface/-/issues</url>
@@ -107,48 +117,36 @@
 	</ciManagement>
 
 	<properties>
-		<package-name>org.bioimageanalysis.icy.deeplearning.tensorflow.v1</package-name>
-		<main-class>org.bioimageanalysis.icy.deeplearning.tensorflow.v1.TensorFlow1Interface</main-class>
-		<license.licenseName>BSD-3-Clause</license.licenseName>
-		<license.copyrightOwners>Institut Pasteur</license.copyrightOwners>
+		<dl-modelrunner.version>0.1.0</dl-modelrunner.version>
+		<protobuf.version>3.2.0</protobuf.version>
+		<package-name>io.bioimage.modelrunner.tensorflow.v1</package-name>
+		<license.licenseName>bsd_3</license.licenseName>
+		<license.copyrightOwners>Institut Pasteur and BioImage.IO developers.</license.copyrightOwners>
 	</properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>dl-model-runner</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>1.15.0</version>
-            <scope>provided</scope>
-        </dependency>
+
+	<dependencies>
 		<dependency>
-		    <groupId>net.imglib2</groupId>
-		    <artifactId>imglib2</artifactId>
-		    <version>5.13.0</version>
+			<groupId>io.bioimage</groupId>
+			<artifactId>dl-modelrunner</artifactId>
+			<version>${dl-modelrunner.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>proto</artifactId>
-            <version>1.15.0</version>
-        </dependency>
-    </dependencies>
-    <repositories>
-        <repository>
-            <id>icy</id>
-            <url>https://icy-nexus.pasteur.fr/repository/Icy/</url>
-        </repository>
-		<repository>
-			<id>scijava.public</id>
-			<url>https://maven.scijava.org/content/groups/public</url>
-		</repository>
-    </repositories>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>tensorflow</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>proto</artifactId>
+		</dependency>
+	</dependencies>
 </project>
