@@ -1,7 +1,16 @@
-/.project
+/engines/
+/models/
+
+# maven specific files
 /target/
-/target/
-/bin/
+
+# eclipse specific files
 /.settings/
-/.classpath
-/*.swp
+.classpath
+.project
+
+# intellij specific files
+.idea
+
+# miscellaneous
+*.swp
