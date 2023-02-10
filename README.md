@@ -15,7 +15,7 @@ To use with maven:
 </dependency>
 ```
 
-and add to </repositories> the following:
+and add to `</repositories>` the following:
 
 ```
 <repository>
