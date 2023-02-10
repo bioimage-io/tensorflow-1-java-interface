@@ -106,7 +106,7 @@
 		<connection>scm:git:https://github.com/bioimage-io/tensorflow-1-java-interface</connection>
 		<developerConnection>scm:git:git@github.com:bioimage-io/tensorflow-1-java-interface</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/bioimage-io/tensorflow-1-java-interface/issues</url>
+		<url>https://github.com/bioimage-io/tensorflow-1-java-interface</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
