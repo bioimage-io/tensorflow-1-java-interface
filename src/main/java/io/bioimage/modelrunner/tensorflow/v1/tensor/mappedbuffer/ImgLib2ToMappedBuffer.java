@@ -75,9 +75,9 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Creates a {@link Tensor} based on the provided {@link Tensor} and the desired dimension order for the resulting tensor.
      * 
-     * @param <T>
-     * @param tensor
-     * @param byteBuffer
+     * @param <T> the type of teh tensor
+     * @param tensor tensor to be converted into byte buffer
+     * @param byteBuffer target byte bufer
 
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
@@ -90,8 +90,9 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Creates a {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
-     * @param rai
-     *        The NDArray to be converted.
+     * @param <T> the type of teh tensor
+     * @param rai image to be converted into byte buffer
+     * @param byteBuffer target byte bufer
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -138,7 +139,9 @@ public final class ImgLib2ToMappedBuffer
      * Creates a integer-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
      * @param imgTensor
+     * 	imglib2 object to be copied into a bytebufer
      * @param byteBuffer
+     * 	byte buffer where the info will be copied
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -162,7 +165,9 @@ public final class ImgLib2ToMappedBuffer
      * Creates a float-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
      * @param imgTensor
+     * 	imglib2 object to be copied into a bytebufer
      * @param byteBuffer
+     * 	byte buffer where the info will be copied
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -186,7 +191,9 @@ public final class ImgLib2ToMappedBuffer
      * Creates a double-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
      * @param imgTensor
+     * 	imglib2 object to be copied into a bytebufer
      * @param byteBuffer
+     * 	byte buffer where the info will be copied
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -209,9 +216,11 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Create header for the temp file that is used for interprocess communication.
      * The header should contain the first key word as an array of bytes (MODEl-RUNNER)
-     * @param <T>
+     * @param <T> 
+     * 	type of the tensor
      * @param tensor
-     * @return
+     * 	tensor whose info is recorded
+     * @return byte array containing the header info for the file
      */
     public static < T extends RealType< T > & NativeType< T > > byte[] 
     		createFileHeader(io.bioimage.modelrunner.tensor.Tensor<T> tensor) {
@@ -240,8 +249,10 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Method that returns a Sting representing the datatype of T
      * @param <T>
+     * 	type of the tensor
      * @param type
-     * @return
+     * 	pixel of an imglib2 object to get the info of teh data type
+     * @return String representation of the datatype
      */
     public static< T extends RealType< T > & NativeType< T > > String getDataTypeString(T type) {
     	if (type instanceof ByteType) {
@@ -267,8 +278,10 @@ public final class ImgLib2ToMappedBuffer
      * Get the total byte size of the temp file that is oging to be created to do interprocess
      * communication for MacOSX
      * @param <T>
+     * 	type of the imglib2 object
      * @param tensor
-     * @return
+     * 	tensor of interest
+     * @return number of bytes needed to create a file with the info of the tensor
      */
     public static  < T extends RealType< T > & NativeType< T > > long 
     		findTotalLengthFile(io.bioimage.modelrunner.tensor.Tensor<T> tensor) {

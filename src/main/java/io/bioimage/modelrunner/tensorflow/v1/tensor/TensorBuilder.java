@@ -86,7 +86,7 @@ public final class TensorBuilder {
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
 	 * 
-	 * @param <T>
+	 * @param <T> teh type of the tensor
 	 * @param rai The NDArray to be converted.
 	 * @return The tensor created from the sequence.
 	 * @throws IllegalArgumentException If the ndarray type is not supported.
