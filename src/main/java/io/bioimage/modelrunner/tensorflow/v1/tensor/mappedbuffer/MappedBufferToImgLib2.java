@@ -114,20 +114,20 @@ public final class MappedBufferToImgLib2
     	if (shape.length == 0)
     		return Tensor.buildEmptyTensor(name, axes);
     	
-        RandomAccessibleInterval<? extends T> data;
+        Img<?> data;
 		switch (dtype)
         {
             case "byte":
-                data = (RandomAccessibleInterval<T>) buildFromTensorByte(buff, shape);
+                data = (Img<?>) buildFromTensorByte(buff, shape);
                 break;
             case "int32":
-            	data = (RandomAccessibleInterval<T>) buildFromTensorInt(buff, shape);
+            	data = (Img<?>) buildFromTensorInt(buff, shape);
                 break;
             case "float32":
-            	data = (RandomAccessibleInterval<T>) buildFromTensorFloat(buff, shape);
+            	data = (Img<?>) buildFromTensorFloat(buff, shape);
                 break;
             case "float64":
-            	data = (RandomAccessibleInterval<T>) buildFromTensorDouble(buff, shape);
+            	data = (Img<?>) buildFromTensorDouble(buff, shape);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
@@ -145,7 +145,7 @@ public final class MappedBufferToImgLib2
      *         If the tensor type is not supported.
      */
     @SuppressWarnings("unchecked")
-    public static < T extends RealType< T > & NativeType< T > > Img<T> build(ByteBuffer tensor) throws IllegalArgumentException
+    public static Img<?> build(ByteBuffer tensor) throws IllegalArgumentException
     {
     	String infoStr = getTensorInfoFromBuffer(tensor);
     	HashMap<String, Object> map = getDataTypeAndShape(infoStr);
@@ -158,13 +158,13 @@ public final class MappedBufferToImgLib2
         switch (dtype)
         {
             case "byte":
-                return (Img<T>) buildFromTensorByte(tensor, shape);
+                return (Img<?>) buildFromTensorByte(tensor, shape);
             case "int32":
-                return (Img<T>) buildFromTensorInt(tensor, shape);
+                return (Img<?>) buildFromTensorInt(tensor, shape);
             case "float32":
-                return (Img<T>) buildFromTensorFloat(tensor, shape);
+                return (Img<?>) buildFromTensorFloat(tensor, shape);
             case "float64":
-                return (Img<T>) buildFromTensorDouble(tensor, shape);
+                return (Img<?>) buildFromTensorDouble(tensor, shape);
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
         }
