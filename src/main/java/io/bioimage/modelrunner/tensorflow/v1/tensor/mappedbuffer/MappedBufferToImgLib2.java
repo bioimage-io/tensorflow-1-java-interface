@@ -1,4 +1,4 @@
-package io.bioimage.modelrunner.tensorflow.v1.tensor;
+package io.bioimage.modelrunner.tensorflow.v1.tensor.mappedbuffer;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -229,9 +229,9 @@ public final class MappedBufferToImgLib2
      * @return
      */
     public static String getTensorInfoFromBuffer(ByteBuffer buff) {
-    	byte[] arr = new byte[MappedFileBuilder.MODEL_RUNNER_HEADER.length];
+    	byte[] arr = new byte[ImgLib2ToMappedBuffer.MODEL_RUNNER_HEADER.length];
     	buff.get(arr);
-    	if (!Arrays.equals(arr, MappedFileBuilder.MODEL_RUNNER_HEADER))
+    	if (!Arrays.equals(arr, ImgLib2ToMappedBuffer.MODEL_RUNNER_HEADER))
             throw new IllegalArgumentException("Error sending tensors between processes.");
         byte[] lenInfoInBytes = new byte[4];
     	buff.get(lenInfoInBytes);

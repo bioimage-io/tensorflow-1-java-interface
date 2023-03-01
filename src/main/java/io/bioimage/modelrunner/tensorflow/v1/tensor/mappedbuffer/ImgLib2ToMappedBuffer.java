@@ -1,4 +1,4 @@
-package io.bioimage.modelrunner.tensorflow.v1.tensor;
+package io.bioimage.modelrunner.tensorflow.v1.tensor.mappedbuffer;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +26,7 @@ import net.imglib2.view.IntervalView;
  * 
  * @author Carlos Garcia Lopez de Haro
  */
-public final class MappedFileBuilder
+public final class ImgLib2ToMappedBuffer
 {
 	
 	final public static byte[] MODEL_RUNNER_HEADER = 
@@ -35,7 +35,7 @@ public final class MappedFileBuilder
     /**
      * Not used (Utility class).
      */
-    private MappedFileBuilder()
+    private ImgLib2ToMappedBuffer()
     {
     }
 
