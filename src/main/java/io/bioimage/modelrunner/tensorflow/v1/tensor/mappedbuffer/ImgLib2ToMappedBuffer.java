@@ -96,7 +96,7 @@ public final class ImgLib2ToMappedBuffer
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
-    public static < T extends RealType< T > & NativeType< T > > void build(RandomAccessibleInterval<T> rai, ByteBuffer byteBuffer)
+    public static <T extends Type<T>> void build(RandomAccessibleInterval<T> rai, ByteBuffer byteBuffer)
     {
     	if (Util.getTypeFromInterval(rai) instanceof ByteType) {
     		buildByte((RandomAccessibleInterval<ByteType>) rai, byteBuffer);
