@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 
 import io.bioimage.modelrunner.tensor.Tensor;
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
@@ -113,20 +114,20 @@ public final class MappedBufferToImgLib2
     	if (shape.length == 0)
     		return Tensor.buildEmptyTensor(name, axes);
     	
-        Img<T> data;
+        RandomAccessibleInterval<T> data;
 		switch (dtype)
         {
             case "byte":
-                data = (Img<T>) buildFromTensorByte(buff, shape);
+                data = (RandomAccessibleInterval<T>) buildFromTensorByte(buff, shape);
                 break;
             case "int32":
-            	data = (Img<T>) buildFromTensorInt(buff, shape);
+            	data = (RandomAccessibleInterval<T>) buildFromTensorInt(buff, shape);
                 break;
             case "float32":
-            	data = (Img<T>) buildFromTensorFloat(buff, shape);
+            	data = (RandomAccessibleInterval<T>) buildFromTensorFloat(buff, shape);
                 break;
             case "float64":
-            	data = (Img<T>) buildFromTensorDouble(buff, shape);
+            	data = (RandomAccessibleInterval<T>) buildFromTensorDouble(buff, shape);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
