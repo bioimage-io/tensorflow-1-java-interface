@@ -71,6 +71,7 @@ public final class ImgLib2Builder {
 	 * Creates a {@link Img} from a given {@link Tensor} and an array with its
 	 * dimensions order.
 	 * 
+	 * @param <T>
 	 * @param tensor The tensor data is read from.
 	 * @return The Img built from the tensor.
 	 * @throws IllegalArgumentException If the tensor type is not supported.

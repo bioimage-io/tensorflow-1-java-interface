@@ -38,8 +38,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.tensorflow.Tensor;
-
+import io.bioimage.modelrunner.tensor.Tensor;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -74,15 +73,16 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a {@link Tensor} based on the provided {@link org.bioimageanalysis.icy.deeplearning.tensor.Tensor} and the desired dimension order for the resulting tensor.
+     * Creates a {@link Tensor} based on the provided {@link Tensor} and the desired dimension order for the resulting tensor.
      * 
-     * @param ndarray
-     *        The Tensor to be converted.
-     * @return The tensor created from the sequence.
+     * @param <T>
+     * @param tensor
+     * @param byteBuffer
+
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
-    public static < T extends RealType< T > & NativeType< T > > void build(io.bioimage.modelrunner.tensor.Tensor<T> tensor, ByteBuffer byteBuffer)
+    public static < T extends RealType< T > & NativeType< T > > void build(Tensor<T> tensor, ByteBuffer byteBuffer)
     {
     	build(tensor.getData(), byteBuffer);
     }
@@ -92,7 +92,6 @@ public final class ImgLib2ToMappedBuffer
      * 
      * @param rai
      *        The NDArray to be converted.
-     * @return The tensor created from the sequence.
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -116,7 +115,6 @@ public final class ImgLib2ToMappedBuffer
      * 
      * @param ndarray
      *        The sequence to be converted.
-     * @return The INDArray created from the sequence.
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -139,9 +137,8 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Creates a integer-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
-     * @param ndarray
-     *        The sequence to be converted.
-     * @return The tensor created from the INDArray.
+     * @param imgTensor
+     * @param byteBuffer
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -164,9 +161,8 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Creates a float-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
-     * @param ndarray
-     *        The sequence to be converted.
-    * @return The tensor created from the INDArray.
+     * @param imgTensor
+     * @param byteBuffer
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
@@ -189,9 +185,8 @@ public final class ImgLib2ToMappedBuffer
     /**
      * Creates a double-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
      * 
-     * @param ndarray
-     *        The ndarray to be converted.
-     * @return The tensor created from the INDArray.
+     * @param imgTensor
+     * @param byteBuffer
      * @throws IllegalArgumentException
      *         If the ndarray type is not supported.
      */
