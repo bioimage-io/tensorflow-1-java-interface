@@ -45,9 +45,7 @@ import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -78,7 +76,7 @@ public final class ImgLib2Builder {
 	 * @throws IllegalArgumentException If the tensor type is not supported.
 	 */
 	@SuppressWarnings("unchecked")
-	public static < T extends RealType< T > & NativeType< T > > Img<T> build(Tensor<?> tensor)
+	public static <T extends Type<T>> Img<T> build(Tensor<?> tensor)
 		throws IllegalArgumentException
 	{
 		// Create an Img of the same type of the tensor

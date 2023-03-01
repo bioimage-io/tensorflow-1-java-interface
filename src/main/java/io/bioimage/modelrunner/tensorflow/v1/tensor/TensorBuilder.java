@@ -44,9 +44,7 @@ import java.nio.IntBuffer;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -79,8 +77,7 @@ public final class TensorBuilder {
 	 * @return The tensor created from the sequence.
 	 * @throws IllegalArgumentException If the ndarray type is not supported.
 	 */
-	public static < T extends RealType< T > & NativeType< T > > 
-	Tensor<?> build(io.bioimage.modelrunner.tensor.Tensor<T> tensor) {
+	public static Tensor<?> build(io.bioimage.modelrunner.tensor.Tensor tensor) {
 		return build(tensor.getData());
 	}
 
@@ -93,7 +90,7 @@ public final class TensorBuilder {
 	 * @return The tensor created from the sequence.
 	 * @throws IllegalArgumentException If the ndarray type is not supported.
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Tensor<?> build(
+	public static <T extends Type<T>> Tensor<?> build(
 		RandomAccessibleInterval<T> rai)
 	{
 		if (Util.getTypeFromInterval(rai) instanceof ByteType) {
