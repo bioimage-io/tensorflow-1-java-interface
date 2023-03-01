@@ -48,6 +48,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -145,7 +146,7 @@ public final class MappedBufferToImgLib2
      *         If the tensor type is not supported.
      */
     @SuppressWarnings("unchecked")
-    public static Img<?> build(ByteBuffer tensor) throws IllegalArgumentException
+    public static <T extends Type<T>> Img<T> build(ByteBuffer tensor) throws IllegalArgumentException
     {
     	String infoStr = getTensorInfoFromBuffer(tensor);
     	HashMap<String, Object> map = getDataTypeAndShape(infoStr);
@@ -158,13 +159,13 @@ public final class MappedBufferToImgLib2
         switch (dtype)
         {
             case "byte":
-                return (Img<?>) buildFromTensorByte(tensor, shape);
+                return (Img<T>) buildFromTensorByte(tensor, shape);
             case "int32":
-                return (Img<?>) buildFromTensorInt(tensor, shape);
+                return (Img<T>) buildFromTensorInt(tensor, shape);
             case "float32":
-                return (Img<?>) buildFromTensorFloat(tensor, shape);
+                return (Img<T>) buildFromTensorFloat(tensor, shape);
             case "float64":
-                return (Img<?>) buildFromTensorDouble(tensor, shape);
+                return (Img<T>) buildFromTensorDouble(tensor, shape);
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
         }
