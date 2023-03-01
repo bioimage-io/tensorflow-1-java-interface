@@ -97,11 +97,13 @@ public final class MappedBufferToImgLib2
     /**
      * Creates a {@link Img} from a given {@link Tensor} and an array with its dimensions order.
      * 
-     * @param tensor
-     *        The tensor data is read from.
-     * @return The INDArray built from the tensor.
-     * @throws IllegalArgumentException
-     *         If the tensor type is not supported.
+     * @param <T>
+     * 	the type of the generated tensor
+     * @param buff
+     * 	byte buffer to get the tensor info from
+     * @return the tensor generated from the bytebuffer
+     * @throws IllegalArgumentException if the data type of the tensor saved in the bytebuffer is
+     * not supported
      */
     @SuppressWarnings("unchecked")
     public static < T extends RealType< T > & NativeType< T > > Tensor<T> buildTensor(ByteBuffer buff) throws IllegalArgumentException
@@ -139,16 +141,16 @@ public final class MappedBufferToImgLib2
     /**
      * Creates a {@link Img} from a given {@link Tensor} and an array with its dimensions order.
      * 
-     * @param tensor
-     *        The tensor data is read from.
-     * @return The INDArray built from the tensor.
-     * @throws IllegalArgumentException
-     *         If the tensor type is not supported.
+     * @param byteBuff
+     *        The bytebyuffer that contains info to create a tenosr
+     * @return The imglib2 image built from the bytebuffer info.
+     * @throws IllegalArgumentException if the data type of the tensor saved in the bytebuffer is
+     * not supported
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Type<T>> Img<T> build(ByteBuffer tensor) throws IllegalArgumentException
+    public static <T extends Type<T>> Img<T> build(ByteBuffer byteBuff) throws IllegalArgumentException
     {
-    	String infoStr = getTensorInfoFromBuffer(tensor);
+    	String infoStr = getTensorInfoFromBuffer(byteBuff);
     	HashMap<String, Object> map = getDataTypeAndShape(infoStr);
     	String dtype = (String) map.get(DATA_TYPE_KEY);
     	long[] shape = (long[]) map.get(SHAPE_KEY);
@@ -159,24 +161,27 @@ public final class MappedBufferToImgLib2
         switch (dtype)
         {
             case "byte":
-                return (Img<T>) buildFromTensorByte(tensor, shape);
+                return (Img<T>) buildFromTensorByte(byteBuff, shape);
             case "int32":
-                return (Img<T>) buildFromTensorInt(tensor, shape);
+                return (Img<T>) buildFromTensorInt(byteBuff, shape);
             case "float32":
-                return (Img<T>) buildFromTensorFloat(tensor, shape);
+                return (Img<T>) buildFromTensorFloat(byteBuff, shape);
             case "float64":
-                return (Img<T>) buildFromTensorDouble(tensor, shape);
+                return (Img<T>) buildFromTensorDouble(byteBuff, shape);
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
         }
     }
 
     /**
-     * Builds a {@link Img} from a unsigned byte-typed {@link Tensor}.
-     * 
+     * Builds a {@link Img} from the information stored in a byte buffer and
+     * the shape of the image that was previously retrieved from the buffer
      * @param tensor
-     *        The tensor data is read from.
-     * @return The INDArray built from the tensor of type {@link DataType#UBYTE}.
+     * 	byte buffer containing the information of the a tenosr, the position in the buffer
+     *  should not be at zero but right after the header.
+     * @param tensorShape
+     * 	shape of the image to generate, it has been retrieved from the byte buffer 
+     * @return image specified in the bytebuffer
      */
     private static Img<ByteType> buildFromTensorByte(ByteBuffer tensor, long[] tensorShape)
     {
@@ -191,11 +196,14 @@ public final class MappedBufferToImgLib2
 	}
 
     /**
-     * Builds a {@link Img} from a unsigned integer-typed {@link Tensor}.
-     * 
+     * Builds a {@link Img} from the information stored in a byte buffer and
+     * the shape of the image that was previously retrieved from the buffer
      * @param tensor
-     *        The tensor data is read from.
-     * @return The sequence built from the tensor of type {@link DataType#INT}.
+     * 	byte buffer containing the information of the a tenosr, the position in the buffer
+     *  should not be at zero but right after the header.
+     * @param tensorShape
+     * 	shape of the image to generate, it has been retrieved from the byte buffer 
+     * @return image specified in the bytebuffer
      */
     private static Img<IntType> buildFromTensorInt(ByteBuffer tensor, long[] tensorShape)
     {
@@ -214,11 +222,14 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Builds a {@link Img} from a unsigned float-typed {@link Tensor}.
-     * 
+     * Builds a {@link Img} from the information stored in a byte buffer and
+     * the shape of the image that was previously retrieved from the buffer
      * @param tensor
-     *        The tensor data is read from.
-     * @return The INDArray built from the tensor of type {@link DataType#FLOAT}.
+     * 	byte buffer containing the information of the a tenosr, the position in the buffer
+     *  should not be at zero but right after the header.
+     * @param tensorShape
+     * 	shape of the image to generate, it has been retrieved from the byte buffer 
+     * @return image specified in the bytebuffer
      */
     private static Img<FloatType> buildFromTensorFloat(ByteBuffer tensor, long[] tensorShape)
     {
@@ -236,11 +247,14 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Builds a {@link Img} from a unsigned double-typed {@link Tensor}.
-     * 
+     * Builds a {@link Img} from the information stored in a byte buffer and
+     * the shape of the image that was previously retrieved from the buffer
      * @param tensor
-     *        The tensor data is read from.
-     * @return The INDArray built from the tensor of type {@link DataType#DOUBLE}.
+     * 	byte buffer containing the information of the a tenosr, the position in the buffer
+     *  should not be at zero but right after the header.
+     * @param tensorShape
+     * 	shape of the image to generate, it has been retrieved from the byte buffer 
+     * @return image specified in the bytebuffer
      */
     private static Img<DoubleType> buildFromTensorDouble(ByteBuffer tensor, long[] tensorShape)
     {
@@ -261,7 +275,9 @@ public final class MappedBufferToImgLib2
      * GEt the String info stored at the beginning of the buffer that contains
      * the data type and the shape.
      * @param buff
-     * @return
+     * 	buffer containing all the data to generate a tensor
+     * @return the String header of teh bytebuffer that contains the data about
+     *  the tensor (name, data type, shape and axes)
      */
     public static String getTensorInfoFromBuffer(ByteBuffer buff) {
     	byte[] arr = new byte[ImgLib2ToMappedBuffer.MODEL_RUNNER_HEADER.length];
@@ -280,7 +296,8 @@ public final class MappedBufferToImgLib2
      * MEthod that retrieves the data type string and shape long array representing
      * the data type and dimensions of the tensor saved in the temp file
      * @param infoStr
-     * @return
+     * 	string header of the file that contains the info about the tensor
+     * @return dictionary containins the name, dtype, shape and axes of the tensor
      */
     public static HashMap<String, Object> getDataTypeAndShape(String infoStr) {
        Matcher matcher = HEADER_PATTERN.matcher(infoStr);
