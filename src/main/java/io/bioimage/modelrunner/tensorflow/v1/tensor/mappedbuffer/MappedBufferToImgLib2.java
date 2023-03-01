@@ -114,7 +114,7 @@ public final class MappedBufferToImgLib2
     	if (shape.length == 0)
     		return Tensor.buildEmptyTensor(name, axes);
     	
-        RandomAccessibleInterval<T> data;
+        RandomAccessibleInterval<? extends T> data;
 		switch (dtype)
         {
             case "byte":
@@ -132,7 +132,7 @@ public final class MappedBufferToImgLib2
             default:
                 throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
         }
-		return Tensor.build(name, axes, data);
+		return Tensor.build(name, axes, (RandomAccessibleInterval<T>) data);
     }
 
     /**
