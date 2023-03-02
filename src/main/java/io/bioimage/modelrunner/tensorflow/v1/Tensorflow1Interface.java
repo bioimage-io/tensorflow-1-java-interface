@@ -490,7 +490,6 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     				FileChannel fc = rd.getChannel();) {
     			MappedByteBuffer mem = fc.map(FileChannel.MapMode.READ_WRITE, 0, lenFile);
     			ByteBuffer byteBuffer = mem.duplicate();
-    			byteBuffer.put(ImgLib2ToMappedBuffer.createFileHeader(tensor));
     			ImgLib2ToMappedBuffer.build(tensor, byteBuffer);
     		} catch (IOException e) {
     			closeModel();

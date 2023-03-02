@@ -55,13 +55,17 @@ import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 
 /**
- * Class that creates temporal files for interprocessing communication for MacOSX execution
+ * Class that maps {@link Tensor} objects to {@link ByteBuffer} objects.
+ * This is done to modify the files that are used to communicate between process
+ * in MacOS Intel to avoid the TF1-TF2 incompatibiity that happens in these systems
  * 
  * @author Carlos Garcia Lopez de Haro
  */
 public final class ImgLib2ToMappedBuffer
 {
-	
+	/**
+	 * Header used to identify files for interprocessing communication
+	 */
 	final public static byte[] MODEL_RUNNER_HEADER = 
 		{(byte) 0x93, 'M', 'O', 'D', 'E', 'L', '-', 'R', 'U', 'N', 'N', 'E', 'R'};
 
@@ -73,30 +77,37 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a {@link Tensor} based on the provided {@link Tensor} and the desired dimension order for the resulting tensor.
+     * Maps a {@link Tensor} to the provided {@link ByteBuffer} with all the information
+     * needed to reconstruct the tensor again
      * 
-     * @param <T> the type of teh tensor
-     * @param tensor tensor to be converted into byte buffer
-     * @param byteBuffer target byte bufer
-
+     * @param <T> 
+     * 	the type of the tensor
+     * @param tensor 
+     * 	tensor to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target byte bufer
      * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     *         If the {@link Tensor} ImgLib2 type is not supported.
      */
     public static < T extends RealType< T > & NativeType< T > > void build(Tensor<T> tensor, ByteBuffer byteBuffer)
     {
+		byteBuffer.put(ImgLib2ToMappedBuffer.createFileHeader(tensor));
     	build(tensor.getData(), byteBuffer);
     }
 
     /**
-     * Creates a {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
+     * Adds the {@link RandomAccessibleInterval} data to the {@link ByteBuffer} provided.
+     * The position of the ByteBuffer is kept in the same place as it was received.
      * 
-     * @param <T> the type of teh tensor
-     * @param rai image to be converted into byte buffer
-     * @param byteBuffer target byte bufer
-     * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     * @param <T> 
+     * 	the type of the {@link RandomAccessibleInterval}
+     * @param rai 
+     * 	{@link RandomAccessibleInterval} to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target bytebuffer
+     * @throws IllegalArgumentException If the {@link RandomAccessibleInterval} type is not supported.
      */
-    public static <T extends Type<T>> void build(RandomAccessibleInterval<T> rai, ByteBuffer byteBuffer)
+    private static <T extends Type<T>> void build(RandomAccessibleInterval<T> rai, ByteBuffer byteBuffer)
     {
     	if (Util.getTypeFromInterval(rai) instanceof ByteType) {
     		buildByte((RandomAccessibleInterval<ByteType>) rai, byteBuffer);
@@ -112,12 +123,13 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a unsigned byte-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
+     * Adds the ByteType {@link RandomAccessibleInterval} data to the {@link ByteBuffer} provided.
+     * The position of the ByteBuffer is kept in the same place as it was received.
      * 
-     * @param ndarray
-     *        The sequence to be converted.
-     * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     * @param imgTensor 
+     * 	{@link RandomAccessibleInterval} to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target bytebuffer
      */
     private static void buildByte(RandomAccessibleInterval<ByteType> imgTensor, ByteBuffer byteBuffer)
     {
@@ -136,14 +148,13 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a integer-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
+     * Adds the IntType {@link RandomAccessibleInterval} data to the {@link ByteBuffer} provided.
+     * The position of the ByteBuffer is kept in the same place as it was received.
      * 
-     * @param imgTensor
-     * 	imglib2 object to be copied into a bytebufer
-     * @param byteBuffer
-     * 	byte buffer where the info will be copied
-     * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     * @param imgTensor 
+     * 	{@link RandomAccessibleInterval} to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target bytebuffer
      */
     private static void buildInt(RandomAccessibleInterval<IntType> imgTensor, ByteBuffer byteBuffer)
     {
@@ -162,14 +173,13 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a float-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
+     * Adds the FloatType {@link RandomAccessibleInterval} data to the {@link ByteBuffer} provided.
+     * The position of the ByteBuffer is kept in the same place as it was received.
      * 
-     * @param imgTensor
-     * 	imglib2 object to be copied into a bytebufer
-     * @param byteBuffer
-     * 	byte buffer where the info will be copied
-     * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     * @param imgTensor 
+     * 	{@link RandomAccessibleInterval} to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target bytebuffer
      */
     private static void buildFloat(RandomAccessibleInterval<FloatType> imgTensor, ByteBuffer byteBuffer)
     {
@@ -188,14 +198,13 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Creates a double-typed {@link Tensor} based on the provided {@link RandomAccessibleInterval} and the desired dimension order for the resulting tensor.
+     * Adds the DoubleType {@link RandomAccessibleInterval} data to the {@link ByteBuffer} provided.
+     * The position of the ByteBuffer is kept in the same place as it was received.
      * 
-     * @param imgTensor
-     * 	imglib2 object to be copied into a bytebufer
-     * @param byteBuffer
-     * 	byte buffer where the info will be copied
-     * @throws IllegalArgumentException
-     *         If the ndarray type is not supported.
+     * @param imgTensor 
+     * 	{@link RandomAccessibleInterval} to be mapped into byte buffer
+     * @param byteBuffer 
+     * 	target bytebuffer
      */
     private static void buildDouble(RandomAccessibleInterval<DoubleType> imgTensor, ByteBuffer byteBuffer)
     {
@@ -275,8 +284,10 @@ public final class ImgLib2ToMappedBuffer
     }
 
     /**
-     * Get the total byte size of the temp file that is oging to be created to do interprocess
-     * communication for MacOSX
+     * Get the total byte size of the temp file that is going to be created to be
+     * able to reconstruct a {@link Tensor} to in the separate process in MacOS Intel
+     * systems
+     * 
      * @param <T>
      * 	type of the imglib2 object
      * @param tensor
