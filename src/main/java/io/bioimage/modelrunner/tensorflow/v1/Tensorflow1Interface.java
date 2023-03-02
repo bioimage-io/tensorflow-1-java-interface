@@ -163,6 +163,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * Folde containing the model that is being executed
      */
     private String modelFolder;
+    /**
+     * List of temporary files used for interprocessing communication
+     */
+    private List<File> listTempFiles;
 	
     /**
      * Constructor that detects whether the operating system where it is being 
@@ -346,7 +350,13 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			model.close();
 		}
 		model = null;
-
+		if (listTempFiles == null)
+			return;
+		for (File ff : listTempFiles) {
+			if (ff.exists())
+				ff.delete();
+		}
+		listTempFiles = null;
 	}
 
 	// TODO make only one
@@ -483,10 +493,15 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * @throws RunModelException if there is any error converting the tensors
      */
 	private void createTensorsForInterprocessing(List<Tensor<?>> tensors) throws RunModelException{
+		if (this.listTempFiles == null)
+			this.listTempFiles = new ArrayList<File>();
 		for (Tensor<?> tensor : tensors) {
 			long lenFile = ImgLib2ToMappedBuffer.findTotalLengthFile(tensor);
+			File ff = new File(tmpDir + File.separator + tensor.getName() + FILE_EXTENSION);
+			ff.deleteOnExit();
+			this.listTempFiles.add(ff);
 			try (RandomAccessFile rd = 
-    				new RandomAccessFile(tmpDir + File.separator + tensor.getName() + FILE_EXTENSION, "rw");
+    				new RandomAccessFile(ff, "rw");
     				FileChannel fc = rd.getChannel();) {
     			MappedByteBuffer mem = fc.map(FileChannel.MapMode.READ_WRITE, 0, lenFile);
     			ByteBuffer byteBuffer = mem.duplicate();
