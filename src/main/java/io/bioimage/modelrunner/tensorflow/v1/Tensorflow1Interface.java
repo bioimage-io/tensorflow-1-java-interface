@@ -549,7 +549,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	private void retrieveInterprocessingTensors(List<Tensor<?>> tensors) throws RunModelException{
 		for (Tensor<?> tensor : tensors) {
 			try (RandomAccessFile rd = 
-    				new RandomAccessFile(tmpDir + File.separator + tensor.getName() + FILE_EXTENSION, "r");
+    				new RandomAccessFile(tmpDir + File.separator 
+    						+ this.getFilename4Tensor(tensor.getName()) + FILE_EXTENSION, "r");
     				FileChannel fc = rd.getChannel();) {
     			MappedByteBuffer mem = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
     			ByteBuffer byteBuffer = mem.duplicate();
