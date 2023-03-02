@@ -46,12 +46,11 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import org.tensorflow.DataType;
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
 
@@ -102,14 +101,13 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned byte-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link ByteType}.
+	 * @return The Img built from the tensor of type {@link UnsignedByteType}.
 	 */
-	private static Img<ByteType> buildFromTensorByte(Tensor<UInt8> tensor) {
+	private static Img<UnsignedByteType> buildFromTensorByte(Tensor<UInt8> tensor) {
 		long[] tensorShape = tensor.shape();
-		final ImgFactory<ByteType> factory = new CellImgFactory<>(new ByteType(),
-			5);
-		final Img<ByteType> outputImg = factory.create(tensorShape);
-		Cursor<ByteType> tensorCursor = outputImg.cursor();
+		final ImgFactory<UnsignedByteType> factory = new CellImgFactory<>(new UnsignedByteType(), 5);
+		final Img<UnsignedByteType> outputImg = factory.create(tensorShape);
+		Cursor<UnsignedByteType> tensorCursor = outputImg.cursor();
 		int totalSize = 1;
 		for (long i : tensorShape) {
 			totalSize *= i;
@@ -124,7 +122,10 @@ public final class ImgLib2Builder {
 			int flatPos = IndexingUtils.multidimensionalIntoFlatIndex(cursorPos,
 				tensorShape);
 			byte val = flatArr[flatPos];
-			tensorCursor.get().set(val);
+			if (val < 0)
+				tensorCursor.get().set(256 - val);
+			else
+				tensorCursor.get().set(val);
 		}
 		return outputImg;
 	}
@@ -163,7 +164,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned float-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link DataType#FLOAT}.
+	 * @return The Img built from the tensor of type {@link FloatType}.
 	 */
 	private static Img<FloatType> buildFromTensorFloat(Tensor<Float> tensor) {
 		long[] tensorShape = tensor.shape();
@@ -194,7 +195,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned double-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link DataType#DOUBLE}.
+	 * @return The Img built from the tensor of type {@link DoubleType}.
 	 */
 	private static Img<DoubleType> buildFromTensorDouble(Tensor<Double> tensor) {
 		long[] tensorShape = tensor.shape();
