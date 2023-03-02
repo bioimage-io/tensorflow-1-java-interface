@@ -58,6 +58,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -167,7 +169,11 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * List of temporary files used for interprocessing communication
      */
     private List<File> listTempFiles;
-	
+    /**
+     * HashMap that maps tensor to the temporal file name for interprocessing
+     */
+    private HashMap<String, String> tensorFilenameMap;
+    
     /**
      * Constructor that detects whether the operating system where it is being 
      * executed is MacOS Intel or not to know if it is going to need interprocessing 
@@ -293,8 +299,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		List<String> args = getProcessCommandsWithoutArgs();
 		args.add(modelFolder);
 		args.add(this.tmpDir);
-		for (Tensor tensor : inputTensors) {args.add(tensor.getName() + INPUT_FILE_TERMINATION);}
-		for (Tensor tensor : outputTensors) {args.add(tensor.getName() + OUTPUT_FILE_TERMINATION);}
+		for (Tensor tensor : inputTensors) {args.add(getFilename4Tensor(tensor.getName()) + INPUT_FILE_TERMINATION);}
+		for (Tensor tensor : outputTensors) {args.add(getFilename4Tensor(tensor.getName()) + OUTPUT_FILE_TERMINATION);}
 		ProcessBuilder builder = new ProcessBuilder(args);
         Process process;
 		try {
@@ -435,8 +441,6 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      */
     public static void main(String[] args) throws LoadModelException, IOException, RunModelException {
     	// Unpack the args needed
-    	//if (true)
-    		//throw new IOException();
     	if (args.length < 4)
     		throw new IllegalArgumentException("Error exectuting Tensorflow 1, "
     				+ "at least 5 arguments are required:" + System.lineSeparator()
@@ -466,7 +470,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	
     	tfInterface.loadModel(modelFolder, modelFolder);
     	
-    	HashMap<String, List<String>> map = getInputTensorsFileNames(args);
+    	HashMap<String, List<String>> map = tfInterface.getInputTensorsFileNames(args);
     	List<String> inputNames = map.get(INPUTS_MAP_KEY);
     	List<Tensor<?>> inputList = inputNames.stream().map(n -> {
 									try {
@@ -486,6 +490,24 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	tfInterface.run(inputList, outputList);
     	tfInterface.createTensorsForInterprocessing(outputList);
     }
+    
+    /**
+     * Get the name of teh temporary file associated to the tensor name
+     * @param name
+     * 	name of the tensor
+     * @return file name associated to the tensor
+     */
+    private String getFilename4Tensor(String name) {
+    	if (tensorFilenameMap == null)
+    		tensorFilenameMap = new HashMap<String, String>();
+    	if (tensorFilenameMap.get(name) != null)
+    		return tensorFilenameMap.get(name);
+    	LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    	String newName = name + "_" +  now.format(formatter);
+    	tensorFilenameMap.put(name, newName);
+		return tensorFilenameMap.get(name);
+    }
 	
     /**
      * Create a temporary file for each of the tensors in the list to communicate with 
@@ -499,7 +521,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			this.listTempFiles = new ArrayList<File>();
 		for (Tensor<?> tensor : tensors) {
 			long lenFile = ImgLib2ToMappedBuffer.findTotalLengthFile(tensor);
-			File ff = new File(tmpDir + File.separator + tensor.getName() + FILE_EXTENSION);
+			File ff = new File(tmpDir + File.separator + getFilename4Tensor(tensor.getName()) + FILE_EXTENSION);
 			if (!ff.exists()) {
 				ff.deleteOnExit();
 				this.listTempFiles.add(ff);
@@ -553,7 +575,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	private < T extends RealType< T > & NativeType< T > > Tensor<T> 
 				retrieveInterprocessingTensorsByName(String name) throws RunModelException {
 		try (RandomAccessFile rd = 
-				new RandomAccessFile(tmpDir + File.separator + name + FILE_EXTENSION, "r");
+				new RandomAccessFile(tmpDir + File.separator 
+						+ this.getFilename4Tensor(name) + FILE_EXTENSION, "r");
 				FileChannel fc = rd.getChannel();) {
 			MappedByteBuffer mem = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 			ByteBuffer byteBuffer = mem.duplicate();
@@ -640,14 +663,24 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * 	args provided to the main method
      * @return a map with a list of input and output names
      */
-    private static HashMap<String, List<String>> getInputTensorsFileNames(String[] args) {
+    private HashMap<String, List<String>> getInputTensorsFileNames(String[] args) {
     	List<String> inputNames = new ArrayList<String>();
     	List<String> outputNames = new ArrayList<String>();
+    	if (this.tensorFilenameMap == null)
+    		this.tensorFilenameMap = new HashMap<String, String>();
     	for (int i = 2; i < args.length; i ++) {
-    		if (args[i].endsWith(INPUT_FILE_TERMINATION))
-    			inputNames.add(args[i].substring(0, args[i].length() - INPUT_FILE_TERMINATION.length()));
-    		else if (args[i].endsWith(OUTPUT_FILE_TERMINATION))
-    			outputNames.add(args[i].substring(0, args[i].length() - OUTPUT_FILE_TERMINATION.length()));
+    		if (args[i].endsWith(INPUT_FILE_TERMINATION)) {
+    			String nameWTimestamp = args[i].substring(0, args[i].length() - INPUT_FILE_TERMINATION.length());
+    			String onlyName = nameWTimestamp.substring(0, nameWTimestamp.lastIndexOf("_"));
+    			inputNames.add(onlyName);
+    			tensorFilenameMap.put(onlyName, nameWTimestamp);
+    		} else if (args[i].endsWith(OUTPUT_FILE_TERMINATION)) {
+    			String nameWTimestamp = args[i].substring(0, args[i].length() - OUTPUT_FILE_TERMINATION.length());
+    			String onlyName = nameWTimestamp.substring(0, nameWTimestamp.lastIndexOf("_"));
+    			outputNames.add(onlyName);
+    			tensorFilenameMap.put(onlyName, nameWTimestamp);
+    	
+    		}
     	}
     	if (inputNames.size() == 0)
     		throw new IllegalArgumentException("The args to the main method of '" 
