@@ -86,10 +86,10 @@ public final class TensorBuilder {
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
 	 * 
-	 * @param <T> teh type of the tensor
-	 * @param rai The NDArray to be converted.
+	 * @param <T> the type of the tensor
+	 * @param rai The {@link RandomAccessibleInterval} to be converted.
 	 * @return The tensor created from the sequence.
-	 * @throws IllegalArgumentException If the ndarray type is not supported.
+	 * @throws IllegalArgumentException If the {@link RandomAccessibleInterval} dtype is not supported.
 	 */
 	public static <T extends Type<T>> Tensor<?> build(
 		RandomAccessibleInterval<T> rai)
@@ -117,9 +117,8 @@ public final class TensorBuilder {
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
 	 * 
-	 * @param imgTensor The sequence to be converted.
-	 * @return The INDArray created from the sequence.
-	 * @throws IllegalArgumentException If the ndarray type is not supported.
+	 * @param imgTensor The {@link RandomAccessibleInterval} to be converted.
+	 * @return The {@link Tensor} created from the sequence.
 	 */
 	private static Tensor<UInt8> buildByte(
 		RandomAccessibleInterval<ByteType> imgTensor)
@@ -156,10 +155,9 @@ public final class TensorBuilder {
 	 * Creates a integer-typed {@link Tensor} based on the provided
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
-	 * 
-	 * @param imgTensor The sequence to be converted.
-	 * @return The tensor created from the INDArray.
-	 * @throws IllegalArgumentException If the ndarray type is not supported.
+	 *  
+	 * @param imgTensor The {@link RandomAccessibleInterval} to be converted.
+	 * @return The {@link Tensor} created from the sequence.
 	 */
 	private static Tensor<Integer> buildInt(
 		RandomAccessibleInterval<IntType> imgTensor)
@@ -197,9 +195,8 @@ public final class TensorBuilder {
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
 	 * 
-	 * @param imgTensor The sequence to be converted.
-	 * @return The tensor created from the INDArray.
-	 * @throws IllegalArgumentException If the ndarray type is not supported.
+	 * @param imgTensor The {@link RandomAccessibleInterval} to be converted.
+	 * @return The {@link Tensor} created from the sequence.
 	 */
 	private static Tensor<Float> buildFloat(
 		RandomAccessibleInterval<FloatType> imgTensor)
@@ -237,9 +234,8 @@ public final class TensorBuilder {
 	 * {@link RandomAccessibleInterval} and the desired dimension order for the
 	 * resulting tensor.
 	 * 
-	 * @param imgTensor The ndarray to be converted.
-	 * @return The tensor created from the INDArray.
-	 * @throws IllegalArgumentException If the ndarray type is not supported.
+	 * @param imgTensor The {@link RandomAccessibleInterval} to be converted.
+	 * @return The {@link Tensor} created from the sequence.
 	 */
 	private static Tensor<Double> buildDouble(
 		RandomAccessibleInterval<DoubleType> imgTensor)
