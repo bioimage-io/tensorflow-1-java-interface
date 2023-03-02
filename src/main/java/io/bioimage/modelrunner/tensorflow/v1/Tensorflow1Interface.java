@@ -71,11 +71,17 @@ import org.tensorflow.framework.SignatureDef;
 import org.tensorflow.framework.TensorInfo;
 
 /**
- * This plugin includes the libraries to convert back and forth TensorFlow 1 to
- * Sequences and IcyBufferedImages.
+ * Class to that communicates with the dl-model runner, see {@link <a href="https://github.com/bioimage-io/model-runner-java">dl-modelrunner</a>},
+ * to execute Tensorflow 1 models.
+ * This class implements the interface {@link DeepLearningEngineInterface} to get the 
+ * agnostic {@link io.bioimage.modelrunner.tensor.Tensor}, covert them into 
+ * {@link org.tensorflow.Tensor}, execute a Tensorflow 1 Deep Learning model on them and
+ * convert the results back to {@link io.bioimage.modelrunner.tensor.Tensor} to send them 
+ * to the main program in an agnostic manner to the main software
  * 
- * @see ImgLib2Builder Create images from tensors.
- * @see TensorBuilder TensorBuilder: Create tensors from images and sequences.
+ * @see ImgLib2Builder Creates ImgLib2 images for the backend
+ *  of {@link io.bioimage.modelrunner.tensor.Tensor} from {@link org.tensorflow.Tensor}
+ * @see TensorBuilder: converts {@link io.bioimage.modelrunner.tensor.Tensor} into {@link org.tensorflow.Tensor}
  * @author Carlos Garcia Lopez de Haro and Daniel Felipe Gonzalez Obando
  */
 public class Tensorflow1Interface implements DeepLearningEngineInterface {
@@ -139,14 +145,29 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * The loaded Tensorflow 1 model
      */
 	private static SavedModelBundle model;
+	/**
+	 * Internal object of the Tensorflow model
+	 */
 	private static SignatureDef sig;
-	
+	/**
+	 * Whether the execution needs interprocessing (MacOS Interl) or not
+	 */
 	private boolean interprocessing = false;
-    
+    /**
+     * TEmporary dir where to store temporary files
+     */
     private String tmpDir;
-    
+    /**
+     * Folde containing the model that is being executed
+     */
     private String modelFolder;
 	
+    /**
+     * Constructor that detects whether the operating system where it is being 
+     * executed is MacOS Intel or not to know if it is going to need interprocessing 
+     * or not
+     * @throws IOException if the temporary dir is not found
+     */
     public Tensorflow1Interface() throws IOException
     {
     	boolean isMac = PlatformDetection.isMacOS();
@@ -158,7 +179,15 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	}
     }
 	
-    public Tensorflow1Interface(boolean doInterprocessing) throws IOException
+    /**
+     * Private constructor that can only be launched from the class to create a separate
+     * process to avoid the conflicts that occur in the same process between TF1 and TF2
+     * in MacOS Intel
+     * @param doInterprocessing
+     * 	whether to do interprocessing or not
+     * @throws IOException if the temp dir is not found
+     */
+    private Tensorflow1Interface(boolean doInterprocessing) throws IOException
     {
     	if (!doInterprocessing) {
     		interprocessing = false;
@@ -173,6 +202,14 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	}
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * Load a Tensorflow 1 model. If the machine where the code is
+     * being executed is a MacOS Intel, the model will be loaded in 
+     * a separate process each time the method {@link #run(List, List)}
+     * is called 
+     */
 	@Override
 	public void loadModel(String modelFolder, String modelSource)
 		throws LoadModelException
@@ -193,6 +230,12 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Run a Tensorflow1 model on the data provided by the {@link Tensor} input list
+	 * and modifies the output list with the results obtained
+	 */
 	@Override
 	public void run(List<Tensor<?>> inputTensors, List<Tensor<?>> outputTensors)
 		throws RunModelException
@@ -228,6 +271,16 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 	}
 	
+	/**
+	 * MEthod only used in MacOS Intel systems that makes all the arangements
+	 * to create another process, communicate the model info and tensors to the other 
+	 * process and then retrieve the results of the other process
+	 * @param inputTensors
+	 * 	tensors that are going to be run on the model
+	 * @param outputTensors
+	 * 	expected results of the model
+	 * @throws RunModelException if there is any issue running the model
+	 */
 	public void runInterprocessing(List<Tensor<?>> inputTensors, List<Tensor<?>> outputTensors) throws RunModelException {
 		createTensorsForInterprocessing(inputTensors);
 		createTensorsForInterprocessing(outputTensors);
@@ -276,6 +329,13 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		return outputTensors;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Close the Tensorflow 1 {@link #model} and {@link #sig}. For 
+	 * MacOS Intel systems it aso deletes the temporary files created to
+	 * communicate with the other process
+	 */
 	@Override
 	public void closeModel() {
 		sig = null;
@@ -341,6 +401,9 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	/**
 	 * Methods to run interprocessing and bypass the errors that occur in MacOS intel
 	 * with the compatibility between TF1 and TF2
+	 * This method checks that the arguments are correct, retrieves the input and output
+	 * tensors, loads the model, makes inference with it and finally sends the tensors
+	 * to the original process
 	 */
     
     public static void main(String[] args) throws LoadModelException, IOException, RunModelException {
@@ -395,6 +458,13 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	tfInterface.createTensorsForInterprocessing(outputList);
     }
 	
+    /**
+     * Create a temporary file for each of the tensors in the list to communicate with 
+     * the separate process in MacOS Intel systems
+     * @param tensors
+     * 	list of tensors to be sent
+     * @throws RunModelException if there is any error converting the tensors
+     */
 	private void createTensorsForInterprocessing(List<Tensor<?>> tensors) throws RunModelException{
 		for (Tensor<?> tensor : tensors) {
 			long lenFile = ImgLib2ToMappedBuffer.findTotalLengthFile(tensor);
@@ -412,6 +482,13 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 	}
 	
+	/**
+	 * Retrieves the data of the tensors contained in the input list from the output
+	 * generated by the independent process
+	 * @param tensors
+	 * 	list of tensors that are going to be filled
+	 * @throws RunModelException if there is any issue retrieving the data from the other process
+	 */
 	private void retrieveInterprocessingTensors(List<Tensor<?>> tensors) throws RunModelException{
 		for (Tensor<?> tensor : tensors) {
 			try (RandomAccessFile rd = 
@@ -427,6 +504,17 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 	}
 	
+	/**
+	 * Create a tensor from the data contained in a file named as the parameter
+	 * provided as an input + the file extension {@link #FILE_EXTENSION}.
+	 * This file is produced by another process to communicate with the current process
+	 * @param <T>
+	 * 	generic type of the tensor
+	 * @param name
+	 * 	name of the file without the extension ({@link #FILE_EXTENSION}).
+	 * @return a tensor created with the data in the file
+	 * @throws RunModelException if there is any problem retrieving the data and cerating the tensor
+	 */
 	private < T extends RealType< T > & NativeType< T > > Tensor<T> 
 				retrieveInterprocessingTensorsByName(String name) throws RunModelException {
 		try (RandomAccessFile rd = 
@@ -444,7 +532,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	/**
 	 * Create the arguments needed to execute tensorflow1 in another 
 	 * process with the corresponding tensors
-	 * @return
+	 * @return the command used to call the separate process
 	 */
 	private List<String> getProcessCommandsWithoutArgs() {
 		String javaHome = System.getProperty("java.home");
@@ -500,6 +588,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		return tmpDir;
 	}
 	
+	/**
+	 * GEt the directory where the TF1 engine is located if a temporary dir is not found
+	 * @return directory of the engines
+	 */
 	private static String getEnginesDir() {
 		ProtectionDomain protectionDomain = Tensorflow1Interface.class.getProtectionDomain();
         CodeSource codeSource = protectionDomain.getCodeSource();
@@ -535,4 +627,11 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	map.put(OUTPUTS_MAP_KEY, outputNames);
     	return map;
     }
+    
+    /**
+     * Method to be executed on garbage collection
+     */
+    protected void finalize() {
+        closeModel();
+     }
 }
