@@ -71,7 +71,8 @@ import org.tensorflow.framework.SignatureDef;
 import org.tensorflow.framework.TensorInfo;
 
 /**
- * Class to that communicates with the dl-model runner, see {@link <a href="https://github.com/bioimage-io/model-runner-java">dl-modelrunner</a>},
+ * Class to that communicates with the dl-model runner, see 
+ * @see <a href="https://github.com/bioimage-io/model-runner-java">dl-modelrunner</a>,
  * to execute Tensorflow 1 models.
  * This class implements the interface {@link DeepLearningEngineInterface} to get the 
  * agnostic {@link io.bioimage.modelrunner.tensor.Tensor}, covert them into 
@@ -79,9 +80,10 @@ import org.tensorflow.framework.TensorInfo;
  * convert the results back to {@link io.bioimage.modelrunner.tensor.Tensor} to send them 
  * to the main program in an agnostic manner to the main software
  * 
- * @see ImgLib2Builder Creates ImgLib2 images for the backend
+ * {@link ImgLib2Builder}. Creates ImgLib2 images for the backend
  *  of {@link io.bioimage.modelrunner.tensor.Tensor} from {@link org.tensorflow.Tensor}
- * @see TensorBuilder: converts {@link io.bioimage.modelrunner.tensor.Tensor} into {@link org.tensorflow.Tensor}
+ * {@link TensorBuilder}. Converts {@link io.bioimage.modelrunner.tensor.Tensor} into {@link org.tensorflow.Tensor}
+ * 
  * @author Carlos Garcia Lopez de Haro and Daniel Felipe Gonzalez Obando
  */
 public class Tensorflow1Interface implements DeepLearningEngineInterface {
@@ -404,8 +406,23 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	 * This method checks that the arguments are correct, retrieves the input and output
 	 * tensors, loads the model, makes inference with it and finally sends the tensors
 	 * to the original process
-	 */
-    
+     * 
+     * @param args
+     * 	arguments of the program:
+     * 		- Path to the model folder
+     * 		- Path to a temporary dir
+     * 		- Name of the input 0
+     * 		- Name of the input 1
+     * 		- ...
+     * 		- Name of the output n
+     * 		- Name of the output 0
+     * 		- Name of the output 1
+     * 		- ...
+     * 		- Name of the output n
+     * @throws LoadModelException if there is any error loading the model
+     * @throws IOException	if there is any error reading or writing any file or with the paths
+     * @throws RunModelException	if there is any error running the model
+     */
     public static void main(String[] args) throws LoadModelException, IOException, RunModelException {
     	// Unpack the args needed
     	if (args.length < 4)

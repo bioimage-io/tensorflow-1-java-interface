@@ -141,6 +141,8 @@ public final class MappedBufferToImgLib2
     /**
      * Creates a {@link Img} from a given {@link Tensor} and an array with its dimensions order.
      * 
+     * @param <T>
+     * 	data type of the image
      * @param byteBuff
      *        The bytebyuffer that contains info to create a tenosr
      * @return The imglib2 image built from the bytebuffer info.

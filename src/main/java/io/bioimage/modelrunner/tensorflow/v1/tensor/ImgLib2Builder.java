@@ -57,6 +57,8 @@ import org.tensorflow.types.UInt8;
 
 /**
  * A {@link Img} builder for TensorFlow {@link Tensor} objects.
+ * Build ImgLib2 objects (backed of {@link io.bioimage.modelrunner.tensor.Tensor})
+ * from Tensorflow 1 {@link Tensor}
  * 
  * @author Carlos Garcia Lopez de Haro
  */
@@ -71,7 +73,7 @@ public final class ImgLib2Builder {
 	 * Creates a {@link Img} from a given {@link Tensor} and an array with its
 	 * dimensions order.
 	 * 
-	 * @param <T> the type of teh image
+	 * @param <T> the type of the image
 	 * @param tensor The tensor data is read from.
 	 * @return The Img built from the tensor.
 	 * @throws IllegalArgumentException If the tensor type is not supported.
@@ -100,7 +102,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned byte-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link DataType#UINT8}.
+	 * @return The Img built from the tensor of type {@link ByteType}.
 	 */
 	private static Img<ByteType> buildFromTensorByte(Tensor<UInt8> tensor) {
 		long[] tensorShape = tensor.shape();
@@ -131,7 +133,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned integer-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The sequence built from the tensor of type {@link DataType#INT32}.
+	 * @return The sequence built from the tensor of type {@link IntType}.
 	 */
 	private static Img<IntType> buildFromTensorInt(Tensor<Integer> tensor) {
 		long[] tensorShape = tensor.shape();
