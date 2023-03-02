@@ -72,7 +72,7 @@ import org.tensorflow.framework.TensorInfo;
 
 /**
  * Class to that communicates with the dl-model runner, see 
- * @see <a href="https://github.com/bioimage-io/model-runner-java">dl-modelrunner</a>,
+ * @see <a href="https://github.com/bioimage-io/model-runner-java">dlmodelrunner</a>
  * to execute Tensorflow 1 models.
  * This class implements the interface {@link DeepLearningEngineInterface} to get the 
  * agnostic {@link io.bioimage.modelrunner.tensor.Tensor}, covert them into 
