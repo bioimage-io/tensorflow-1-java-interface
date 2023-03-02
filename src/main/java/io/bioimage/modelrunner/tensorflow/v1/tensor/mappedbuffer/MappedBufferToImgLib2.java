@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
 /**
- * A {@link Img} builder for TensorFlow {@link Tensor} objects.
+ * A {@link Img} builder from {@link ByteBuffer} objects
  * 
  * @author Carlos Garcia Lopez de Haro
  */
@@ -64,7 +64,7 @@ public final class MappedBufferToImgLib2
 {
 	/**
 	 * Pattern that matches the header of the temporal file for interprocess communication
-	 * and retrieves data type and shape
+	 * and retrieves data type, shape, name and axes
 	 */
     private static final Pattern HEADER_PATTERN = Pattern.compile("'dtype':'([a-zA-Z0-9]+)'"
             + ",'axes':'([a-zA-Z]+)'"
@@ -95,7 +95,7 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Creates a {@link Img} from a given {@link Tensor} and an array with its dimensions order.
+     * Creates a {@link Tensor} from the information stored in a {@link ByteBuffer}
      * 
      * @param <T>
      * 	the type of the generated tensor
@@ -109,7 +109,7 @@ public final class MappedBufferToImgLib2
     public static < T extends RealType< T > & NativeType< T > > Tensor<T> buildTensor(ByteBuffer buff) throws IllegalArgumentException
     {
     	String infoStr = getTensorInfoFromBuffer(buff);
-    	HashMap<String, Object> map = getDataTypeAndShape(infoStr);
+    	HashMap<String, Object> map = getInfoFromHeaderString(infoStr);
     	String dtype = (String) map.get(DATA_TYPE_KEY);
     	String axes = (String) map.get(AXES_KEY);
     	String name = (String) map.get(NAME_KEY);
@@ -139,13 +139,13 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Creates a {@link Img} from a given {@link Tensor} and an array with its dimensions order.
+     * Creates a {@link Img} from the information stored in a {@link ByteBuffer}
      * 
      * @param <T>
      * 	data type of the image
      * @param byteBuff
-     *        The bytebyuffer that contains info to create a tenosr
-     * @return The imglib2 image built from the bytebuffer info.
+     *        The bytebyuffer that contains info to create a tenosr or a {@link Img}
+     * @return The imglib2 image {@link Img} built from the bytebuffer info.
      * @throws IllegalArgumentException if the data type of the tensor saved in the bytebuffer is
      * not supported
      */
@@ -153,7 +153,7 @@ public final class MappedBufferToImgLib2
     public static <T extends Type<T>> Img<T> build(ByteBuffer byteBuff) throws IllegalArgumentException
     {
     	String infoStr = getTensorInfoFromBuffer(byteBuff);
-    	HashMap<String, Object> map = getDataTypeAndShape(infoStr);
+    	HashMap<String, Object> map = getInfoFromHeaderString(infoStr);
     	String dtype = (String) map.get(DATA_TYPE_KEY);
     	long[] shape = (long[]) map.get(SHAPE_KEY);
     	if (shape.length == 0)
@@ -176,8 +176,8 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Builds a {@link Img} from the information stored in a byte buffer and
-     * the shape of the image that was previously retrieved from the buffer
+     * Builds a ByteType {@link Img} from the information stored in a byte buffer.
+     * The shape of the image that was previously retrieved from the buffer
      * @param tensor
      * 	byte buffer containing the information of the a tenosr, the position in the buffer
      *  should not be at zero but right after the header.
@@ -198,8 +198,8 @@ public final class MappedBufferToImgLib2
 	}
 
     /**
-     * Builds a {@link Img} from the information stored in a byte buffer and
-     * the shape of the image that was previously retrieved from the buffer
+     * Builds a IntType {@link Img} from the information stored in a byte buffer.
+     * The shape of the image that was previously retrieved from the buffer
      * @param tensor
      * 	byte buffer containing the information of the a tenosr, the position in the buffer
      *  should not be at zero but right after the header.
@@ -224,8 +224,8 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Builds a {@link Img} from the information stored in a byte buffer and
-     * the shape of the image that was previously retrieved from the buffer
+     * Builds a FloatType {@link Img} from the information stored in a byte buffer.
+     * The shape of the image that was previously retrieved from the buffer
      * @param tensor
      * 	byte buffer containing the information of the a tenosr, the position in the buffer
      *  should not be at zero but right after the header.
@@ -249,8 +249,8 @@ public final class MappedBufferToImgLib2
     }
 
     /**
-     * Builds a {@link Img} from the information stored in a byte buffer and
-     * the shape of the image that was previously retrieved from the buffer
+     * Builds a DoubleType {@link Img} from the information stored in a byte buffer.
+     * The shape of the image that was previously retrieved from the buffer
      * @param tensor
      * 	byte buffer containing the information of the a tenosr, the position in the buffer
      *  should not be at zero but right after the header.
@@ -274,14 +274,29 @@ public final class MappedBufferToImgLib2
     }
     
     /**
+     * Method that returns the information about the tensor specified at the 
+     * beginning of the {@link ByteBuffer} object created 
+     * with {@link ImgLib2ToMappedBuffer#build()}.
+     * This method reads the buffer from the beginning
+     * @param buff
+     * 	ByteBuffer containing the information about the tensor
+     * @return map containing the name, axes order, datatype and shape of the tensor
+     * stored in teh buffer
+     */
+    public static HashMap<String, Object> readHeaderAndGetInfo(ByteBuffer buff) {
+    	buff.clear();
+    	return getInfoFromHeaderString(getTensorInfoFromBuffer(buff));
+    }
+    
+    /**
      * GEt the String info stored at the beginning of the buffer that contains
-     * the data type and the shape.
+     * the data type, name of tensor, axes and shape info.
      * @param buff
      * 	buffer containing all the data to generate a tensor
      * @return the String header of teh bytebuffer that contains the data about
      *  the tensor (name, data type, shape and axes)
      */
-    public static String getTensorInfoFromBuffer(ByteBuffer buff) {
+    private static String getTensorInfoFromBuffer(ByteBuffer buff) {
     	byte[] arr = new byte[ImgLib2ToMappedBuffer.MODEL_RUNNER_HEADER.length];
     	buff.get(arr);
     	if (!Arrays.equals(arr, ImgLib2ToMappedBuffer.MODEL_RUNNER_HEADER))
@@ -301,7 +316,7 @@ public final class MappedBufferToImgLib2
      * 	string header of the file that contains the info about the tensor
      * @return dictionary containins the name, dtype, shape and axes of the tensor
      */
-    public static HashMap<String, Object> getDataTypeAndShape(String infoStr) {
+    private static HashMap<String, Object> getInfoFromHeaderString(String infoStr) {
        Matcher matcher = HEADER_PATTERN.matcher(infoStr);
        if (!matcher.find()) {
            throw new IllegalArgumentException("Cannot find datatype, name, axes and dimensions "
