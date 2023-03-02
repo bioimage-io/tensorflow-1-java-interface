@@ -435,6 +435,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      */
     public static void main(String[] args) throws LoadModelException, IOException, RunModelException {
     	// Unpack the args needed
+    	//if (true)
+    		//throw new IOException();
     	if (args.length < 4)
     		throw new IllegalArgumentException("Error exectuting Tensorflow 1, "
     				+ "at least 5 arguments are required:" + System.lineSeparator()
@@ -498,8 +500,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		for (Tensor<?> tensor : tensors) {
 			long lenFile = ImgLib2ToMappedBuffer.findTotalLengthFile(tensor);
 			File ff = new File(tmpDir + File.separator + tensor.getName() + FILE_EXTENSION);
-			ff.deleteOnExit();
-			this.listTempFiles.add(ff);
+			if (!ff.exists()) {
+				ff.deleteOnExit();
+				this.listTempFiles.add(ff);
+			}
 			try (RandomAccessFile rd = 
     				new RandomAccessFile(ff, "rw");
     				FileChannel fc = rd.getChannel();) {
