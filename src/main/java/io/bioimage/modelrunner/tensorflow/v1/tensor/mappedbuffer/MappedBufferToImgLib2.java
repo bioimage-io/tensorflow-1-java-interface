@@ -278,7 +278,7 @@ public final class MappedBufferToImgLib2
     /**
      * Method that returns the information about the tensor specified at the 
      * beginning of the {@link ByteBuffer} object created 
-     * with {@link ImgLib2ToMappedBuffer#build()}.
+     * with {@link ImgLib2ToMappedBuffer#build(Tensor)}.
      * This method reads the buffer from the beginning
      * @param buff
      * 	ByteBuffer containing the information about the tensor
