@@ -77,10 +77,10 @@ import org.tensorflow.framework.TensorInfo;
  * @see <a href="https://github.com/bioimage-io/model-runner-java">dlmodelrunner</a>
  * to execute Tensorflow 1 models.
  * This class implements the interface {@link DeepLearningEngineInterface} to get the 
- * agnostic {@link io.bioimage.modelrunner.tensor.Tensor}, covert them into 
+ * agnostic {@link io.bioimage.modelrunner.tensor.Tensor}, convert them into 
  * {@link org.tensorflow.Tensor}, execute a Tensorflow 1 Deep Learning model on them and
  * convert the results back to {@link io.bioimage.modelrunner.tensor.Tensor} to send them 
- * to the main program in an agnostic manner to the main software
+ * to the main program in an agnostic manner.
  * 
  * {@link ImgLib2Builder}. Creates ImgLib2 images for the backend
  *  of {@link io.bioimage.modelrunner.tensor.Tensor} from {@link org.tensorflow.Tensor}
