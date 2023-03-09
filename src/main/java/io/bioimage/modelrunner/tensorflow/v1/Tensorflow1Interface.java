@@ -274,7 +274,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		List<org.tensorflow.Tensor<?>> resultPatchTensors = runner.run();
 
 		// Fill the agnostic output tensors list with data from the inference result
-		outputTensors = fillOutputTensors(resultPatchTensors, outputTensors);
+		fillOutputTensors(resultPatchTensors, outputTensors);
 		for (org.tensorflow.Tensor<?> tt : inTensors) {
 			tt.close();
 		}
@@ -325,11 +325,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	 * 
 	 * @param outputNDArrays an NDList containing NDArrays (tensors)
 	 * @param outputTensors the names given to the tensors by the model
-	 * @return a list with Deep Learning framework agnostic tensors
 	 * @throws RunModelException If the number of tensors expected is not the same
 	 *           as the number of Tensors outputed by the model
 	 */
-	public static List<Tensor<?>> fillOutputTensors(
+	public static void fillOutputTensors(
 		List<org.tensorflow.Tensor<?>> outputNDArrays,
 		List<Tensor<?>> outputTensors) throws RunModelException
 	{
@@ -338,7 +337,6 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		for (int i = 0; i < outputNDArrays.size(); i++) {
 			outputTensors.get(i).setData(ImgLib2Builder.build(outputNDArrays.get(i)));
 		}
-		return outputTensors;
 	}
 
 	/**
