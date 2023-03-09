@@ -122,7 +122,7 @@ public final class ImgLib2Builder {
 				tensorShape);
 			byte val = flatArr[flatPos];
 			if (val < 0)
-				tensorCursor.get().set(256 + val);
+				tensorCursor.get().set(256 + (int) val);
 			else
 				tensorCursor.get().set(val);
 		}
