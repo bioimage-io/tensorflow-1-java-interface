@@ -694,11 +694,4 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     	map.put(OUTPUTS_MAP_KEY, outputNames);
     	return map;
     }
-    
-    /**
-     * Method to be executed on garbage collection
-     */
-    protected void finalize() {
-        closeModel();
-     }
 }
