@@ -100,7 +100,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned byte-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link UnsignedByteType}.
+	 * @return The Img built from the tensor, of type {@link UnsignedByteType}.
 	 */
 	private static Img<UnsignedByteType> buildFromTensorByte(Tensor<UInt8> tensor) {
 		long[] tensorShape = tensor.shape();
@@ -133,7 +133,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned integer-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The sequence built from the tensor of type {@link IntType}.
+	 * @return The sequence built from the tensor, of type {@link IntType}.
 	 */
 	private static Img<IntType> buildFromTensorInt(Tensor<Integer> tensor) {
 		long[] tensorShape = tensor.shape();
@@ -163,7 +163,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned float-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link FloatType}.
+	 * @return The Img built from the tensor, of type {@link FloatType}.
 	 */
 	private static Img<FloatType> buildFromTensorFloat(Tensor<Float> tensor) {
 		long[] tensorShape = tensor.shape();
@@ -194,7 +194,7 @@ public final class ImgLib2Builder {
 	 * Builds a {@link Img} from a unsigned double-typed {@link Tensor}.
 	 * 
 	 * @param tensor The tensor data is read from.
-	 * @return The Img built from the tensor of type {@link DoubleType}.
+	 * @return The Img built from the tensor, of type {@link DoubleType}.
 	 */
 	private static Img<DoubleType> buildFromTensorDouble(Tensor<Double> tensor) {
 		long[] tensorShape = tensor.shape();
