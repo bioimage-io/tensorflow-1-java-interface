@@ -83,7 +83,7 @@ public final class ImgLib2Builder {
 		// Create an Img of the same type of the tensor
 		switch (tensor.dataType()) {
 			case UINT8:
-				return (Img<T>) buildFromTensorByte((Tensor<UInt8>) tensor);
+				return (Img<T>) buildFromTensorUByte((Tensor<UInt8>) tensor);
 			case INT32:
 				return (Img<T>) buildFromTensorInt((Tensor<Integer>) tensor);
 			case FLOAT:
@@ -102,7 +102,7 @@ public final class ImgLib2Builder {
 	 * @param tensor The tensor data is read from.
 	 * @return The Img built from the tensor, of type {@link UnsignedByteType}.
 	 */
-	private static Img<UnsignedByteType> buildFromTensorByte(Tensor<UInt8> tensor) {
+	private static Img<UnsignedByteType> buildFromTensorUByte(Tensor<UInt8> tensor) {
 		long[] tensorShape = tensor.shape();
 		final ImgFactory<UnsignedByteType> factory = new CellImgFactory<>(new UnsignedByteType(), 5);
 		final Img<UnsignedByteType> outputImg = factory.create(tensorShape);
