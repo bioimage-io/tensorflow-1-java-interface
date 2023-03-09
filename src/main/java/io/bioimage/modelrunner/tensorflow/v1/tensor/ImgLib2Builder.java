@@ -69,8 +69,7 @@ public final class ImgLib2Builder {
 	private ImgLib2Builder() {}
 
 	/**
-	 * Creates a {@link Img} from a given {@link Tensor} and an array with its
-	 * dimensions order.
+	 * Creates a {@link Img} from a given {@link Tensor}
 	 * 
 	 * @param <T> the type of the image
 	 * @param tensor The tensor data is read from.
