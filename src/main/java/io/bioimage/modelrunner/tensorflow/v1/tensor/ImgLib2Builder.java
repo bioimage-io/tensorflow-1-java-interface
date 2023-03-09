@@ -56,7 +56,7 @@ import org.tensorflow.types.UInt8;
 
 /**
  * A {@link Img} builder for TensorFlow {@link Tensor} objects.
- * Build ImgLib2 objects (backed of {@link io.bioimage.modelrunner.tensor.Tensor})
+ * Build ImgLib2 objects (backend of {@link io.bioimage.modelrunner.tensor.Tensor})
  * from Tensorflow 1 {@link Tensor}
  * 
  * @author Carlos Garcia Lopez de Haro
