@@ -31,7 +31,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
 package io.bioimage.modelrunner.tensorflow.v1;
 
 import com.google.protobuf.InvalidProtocolBufferException;
