@@ -43,8 +43,7 @@ import java.nio.IntBuffer;
 
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
-import net.imglib2.img.cell.CellImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -104,7 +103,7 @@ public final class ImgLib2Builder {
 	 */
 	private static Img<UnsignedByteType> buildFromTensorUByte(Tensor<UInt8> tensor) {
 		long[] tensorShape = tensor.shape();
-		final ImgFactory<UnsignedByteType> factory = new CellImgFactory<>(new UnsignedByteType(), 5);
+		final ArrayImgFactory<UnsignedByteType> factory = new ArrayImgFactory<>(new UnsignedByteType());
 		final Img<UnsignedByteType> outputImg = factory.create(tensorShape);
 		Cursor<UnsignedByteType> tensorCursor = outputImg.cursor();
 		int totalSize = 1;
@@ -137,7 +136,7 @@ public final class ImgLib2Builder {
 	 */
 	private static Img<IntType> buildFromTensorInt(Tensor<Integer> tensor) {
 		long[] tensorShape = tensor.shape();
-		final ImgFactory<IntType> factory = new CellImgFactory<>(new IntType(), 5);
+		final ArrayImgFactory<IntType> factory = new ArrayImgFactory<>(new IntType());
 		final Img<IntType> outputImg = factory.create(tensorShape);
 		Cursor<IntType> tensorCursor = outputImg.cursor();
 		int totalSize = 1;
@@ -167,8 +166,7 @@ public final class ImgLib2Builder {
 	 */
 	private static Img<FloatType> buildFromTensorFloat(Tensor<Float> tensor) {
 		long[] tensorShape = tensor.shape();
-		final ImgFactory<FloatType> factory = new CellImgFactory<>(new FloatType(),
-			5);
+		final ArrayImgFactory<FloatType> factory = new ArrayImgFactory<>(new FloatType());
 		final Img<FloatType> outputImg = factory.create(tensorShape);
 		Cursor<FloatType> tensorCursor = outputImg.cursor();
 		int totalSize = 1;
@@ -198,8 +196,7 @@ public final class ImgLib2Builder {
 	 */
 	private static Img<DoubleType> buildFromTensorDouble(Tensor<Double> tensor) {
 		long[] tensorShape = tensor.shape();
-		final ImgFactory<DoubleType> factory = new CellImgFactory<>(
-			new DoubleType(), 5);
+		final ArrayImgFactory<DoubleType> factory = new ArrayImgFactory<>(new DoubleType());
 		final Img<DoubleType> outputImg = factory.create(tensorShape);
 		Cursor<DoubleType> tensorCursor = outputImg.cursor();
 		int totalSize = 1;
