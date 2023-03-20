@@ -44,8 +44,7 @@ import io.bioimage.modelrunner.tensor.Tensor;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
-import net.imglib2.img.cell.CellImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
@@ -188,7 +187,7 @@ public final class MappedBufferToImgLib2
      */
     private static Img<ByteType> buildFromTensorByte(ByteBuffer tensor, long[] tensorShape)
     {
-    	final ImgFactory< ByteType > factory = new CellImgFactory<>( new ByteType(), 5 );
+    	final ArrayImgFactory< ByteType > factory = new ArrayImgFactory<>( new ByteType() );
         final Img< ByteType > outputImg = (Img<ByteType>) factory.create(tensorShape);
     	Cursor<ByteType> tensorCursor= outputImg.cursor();
 		while (tensorCursor.hasNext()) {
@@ -210,7 +209,7 @@ public final class MappedBufferToImgLib2
      */
     private static Img<IntType> buildFromTensorInt(ByteBuffer tensor, long[] tensorShape)
     {
-    	final ImgFactory< IntType > factory = new CellImgFactory<>( new IntType(), 5 );
+    	final ArrayImgFactory< IntType > factory = new ArrayImgFactory<>( new IntType() );
         final Img< IntType > outputImg = (Img<IntType>) factory.create(tensorShape);
     	Cursor<IntType> tensorCursor= outputImg.cursor();
     	byte[] bytes = new byte[4];
@@ -236,7 +235,7 @@ public final class MappedBufferToImgLib2
      */
     private static Img<FloatType> buildFromTensorFloat(ByteBuffer tensor, long[] tensorShape)
     {
-    	final ImgFactory< FloatType > factory = new CellImgFactory<>( new FloatType(), 5 );
+    	final ArrayImgFactory< FloatType > factory = new ArrayImgFactory<>( new FloatType() );
         final Img< FloatType > outputImg = (Img<FloatType>) factory.create(tensorShape);
     	Cursor<FloatType> tensorCursor= outputImg.cursor();
 		byte[] bytes = new byte[4];
@@ -261,7 +260,7 @@ public final class MappedBufferToImgLib2
      */
     private static Img<DoubleType> buildFromTensorDouble(ByteBuffer tensor, long[] tensorShape)
     {
-    	final ImgFactory< DoubleType > factory = new CellImgFactory<>( new DoubleType(), 5 );
+    	final ArrayImgFactory< DoubleType > factory = new ArrayImgFactory<>( new DoubleType() );
         final Img< DoubleType > outputImg = (Img<DoubleType>) factory.create(tensorShape);
     	Cursor<DoubleType> tensorCursor= outputImg.cursor();
     	byte[] bytes = new byte[8];
