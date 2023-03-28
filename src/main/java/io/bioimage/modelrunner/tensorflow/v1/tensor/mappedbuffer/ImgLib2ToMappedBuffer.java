@@ -91,6 +91,8 @@ public final class ImgLib2ToMappedBuffer
     public static < T extends RealType< T > & NativeType< T > > void build(Tensor<T> tensor, ByteBuffer byteBuffer)
     {
 		byteBuffer.put(ImgLib2ToMappedBuffer.createFileHeader(tensor));
+		if (tensor.isEmpty())
+			return;
     	build(tensor.getData(), byteBuffer);
     }
 
@@ -233,9 +235,10 @@ public final class ImgLib2ToMappedBuffer
     public static < T extends RealType< T > & NativeType< T > > byte[] 
     		createFileHeader(io.bioimage.modelrunner.tensor.Tensor<T> tensor) {
     	String dimsStr = 
-    			tensor.getData() != null ? Arrays.toString(tensor.getData().dimensionsAsLongArray()) : "[]";
+    			!tensor.isEmpty() ? Arrays.toString(tensor.getData().dimensionsAsLongArray()) : "[]";
+    	T dtype = !tensor.isEmpty() ? Util.getTypeFromInterval(tensor.getData()): (T) new FloatType();
     	String descriptionStr = "{'dtype':'" 
-    			+ getDataTypeString(Util.getTypeFromInterval(tensor.getData())) + "','axes':'" 
+    			+ getDataTypeString(dtype) + "','axes':'" 
     			+ tensor.getAxesOrderString() + "','name':'" + tensor.getName() +  "','shape':'" 
     			+ dimsStr + "'}";
     	
@@ -296,13 +299,14 @@ public final class ImgLib2ToMappedBuffer
     public static  < T extends RealType< T > & NativeType< T > > long 
     		findTotalLengthFile(io.bioimage.modelrunner.tensor.Tensor<T> tensor) {
     	long startLen = createFileHeader(tensor).length;
-    	long[] dimsArr = tensor.getData() != null ? tensor.getData().dimensionsAsLongArray() : null;
+    	long[] dimsArr = !tensor.isEmpty() ? tensor.getData().dimensionsAsLongArray() : null;
     	if (dimsArr == null)
     		return startLen;
     	long totSizeFlat = 1;
     	for (long i : dimsArr) {totSizeFlat *= i;}
     	long nBytesDt = 1;
-    	Type<T> dtype = Util.getTypeFromInterval(tensor.getData());
+    	Type<T> dtype = !tensor.isEmpty() ? 
+    			Util.getTypeFromInterval(tensor.getData()) : (Type<T>) new FloatType();
     	if (dtype instanceof IntType) {
     		nBytesDt = 4;
     	} else if (dtype instanceof ByteType) {
