@@ -73,6 +73,14 @@ import org.tensorflow.framework.SignatureDef;
 import org.tensorflow.framework.TensorInfo;
 
 /**
+ * TODO 
+ * currently this class does not need interprocessing as the conflicting 
+ * engine (TF2) is hte one that is going to do the interprocessing. However, 
+ * the code is still structured for interprocessing as I assume in the near
+ * future I am going to start moving everything towards interprocessing, although
+ * it wil probably involve more omplex architectures than mappedbuffers
+ * TODO
+ * 
  * Class to that communicates with the dl-model runner, see 
  * @see <a href="https://github.com/bioimage-io/model-runner-java">dlmodelrunner</a>
  * to execute Tensorflow 1 models.
@@ -184,7 +192,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     {
     	boolean isMac = PlatformDetection.isMacOS();
     	boolean isIntel = new PlatformDetection().getArch().equals(PlatformDetection.ARCH_X86_64);
-    	if (isMac && isIntel) {
+    	if (false && isMac && isIntel) {
     		interprocessing = true;
     		tmpDir = getTemporaryDir();
     		
