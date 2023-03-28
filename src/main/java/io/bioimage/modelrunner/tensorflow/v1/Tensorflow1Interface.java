@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.tensorflow.SavedModelBundle;
@@ -594,6 +595,20 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		String javaHome = System.getProperty("java.home");
         String javaBin = javaHome +  File.separator + "bin" + File.separator + "java";
         String classpath = System.getProperty("java.class.path");
+        while (classpath.contains(";;"))
+        	classpath = classpath.replace(";;", ";");
+        String[] allClasspath = classpath.split(";");
+        classpath = "";
+        Pattern imglib2Pattern = Pattern.compile(".*imglib2-.*\\.jar$");
+        Pattern modelrunnerPattern = Pattern.compile(".*dl-modelrunner-.*\\.jar$");
+        
+        for (String clsStr : allClasspath) {
+        	if (clsStr.contains("model-runner"))
+        		classpath += clsStr + File.pathSeparator;
+        	if ( modelrunnerPattern.matcher(clsStr).find() 
+        			|| imglib2Pattern.matcher(clsStr).find() )
+        		classpath += clsStr + File.pathSeparator;
+        }
         ProtectionDomain protectionDomain = Tensorflow1Interface.class.getProtectionDomain();
         CodeSource codeSource = protectionDomain.getCodeSource();
         String className = Tensorflow1Interface.class.getName();
