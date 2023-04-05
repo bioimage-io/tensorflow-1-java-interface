@@ -637,8 +637,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	    if (urlString.startsWith("jar:")) {
 	        urlString = urlString.substring(4);
 	    }
-	    if (urlString.startsWith("file:/")) {
+	    if (urlString.startsWith("file:/") && PlatformDetection.isWindows()) {
 	        urlString = urlString.substring(6);
+	    } else if (urlString.startsWith("file:/") && !PlatformDetection.isWindows()) {
+	        urlString = urlString.substring(5);
 	    }
 	    urlString = URLDecoder.decode(urlString, "UTF-8");
 	    File file = new File(urlString);
