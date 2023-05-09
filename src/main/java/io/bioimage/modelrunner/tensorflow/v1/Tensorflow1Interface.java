@@ -603,6 +603,9 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 
         String modelrunnerPath = getPathFromClass(DeepLearningEngineInterface.class);
         String imglib2Path = getPathFromClass(NativeType.class);
+        if (modelrunnerPath.endsWith("DeepLearningEngineInterface.class") 
+        		&& !modelrunnerPath.contains(File.pathSeparator))
+        	modelrunnerPath = System.getProperty("java.class.path");
         String classpath =  modelrunnerPath + File.pathSeparator + imglib2Path + File.pathSeparator;
         ProtectionDomain protectionDomain = Tensorflow1Interface.class.getProtectionDomain();
         CodeSource codeSource = protectionDomain.getCodeSource();
@@ -653,11 +656,16 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	/**
 	 * Get temporary directory to perform the interprocessing communication in MacOSX intel
 	 * @return the tmp dir
-	 * @throws IOException
+	 * @throws IOException if the files cannot be written in any of the temp dirs
 	 */
 	private static String getTemporaryDir() throws IOException {
 		String tmpDir;
-		if (System.getenv("temp") != null
+		String enginesDir = getEnginesDir();
+		if (enginesDir != null && Files.isWritable(Paths.get(enginesDir))) {
+			tmpDir = enginesDir + File.separator + "temp";
+			if (!(new File(tmpDir).isDirectory()) &&  !(new File(tmpDir).mkdirs()))
+				tmpDir = enginesDir;
+		} else if (System.getenv("temp") != null
 			&& Files.isWritable(Paths.get(System.getenv("temp")))) {
 			return System.getenv("temp");
 		} else if (System.getenv("TEMP") != null
@@ -672,12 +680,6 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		} else if (System.getProperty("java.io.tmpdir") != null 
 				&& Files.isWritable(Paths.get(System.getProperty("java.io.tmpdir")))) {
 			return System.getProperty("java.io.tmpdir");
-		}
-		String enginesDir = getEnginesDir();
-		if (Files.isWritable(Paths.get(enginesDir))) {
-			tmpDir = enginesDir + File.separator + "temp";
-			if (!(new File(tmpDir).isDirectory()) &&  !(new File(tmpDir).mkdirs()))
-				tmpDir = enginesDir;
 		} else {
 			throw new IOException("Unable to find temporal directory with writting rights. "
 					+ "Please either allow writting on the system temporal folder or on '" + enginesDir + "'.");
@@ -686,14 +688,35 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	}
 	
 	/**
-	 * GEt the directory where the TF1 engine is located if a temporary dir is not found
+	 * GEt the directory where the TF2 engine is located if a temporary dir is not found
 	 * @return directory of the engines
 	 */
 	private static String getEnginesDir() {
-		ProtectionDomain protectionDomain = Tensorflow1Interface.class.getProtectionDomain();
-        CodeSource codeSource = protectionDomain.getCodeSource();
-        String jarFile = codeSource.getLocation().getPath();
-        return jarFile;
+		String dir;
+		try {
+			dir = getPathFromClass(Tensorflow1Interface.class);
+		} catch (UnsupportedEncodingException e) {
+			String classResource = Tensorflow1Interface.class.getName().replace('.', '/') + ".class";
+		    URL resourceUrl = Tensorflow1Interface.class.getClassLoader().getResource(classResource);
+		    if (resourceUrl == null) {
+		        return null;
+		    }
+		    String urlString = resourceUrl.toString();
+		    if (urlString.startsWith("jar:")) {
+		        urlString = urlString.substring(4);
+		    }
+		    if (urlString.startsWith("file:/") && PlatformDetection.isWindows()) {
+		        urlString = urlString.substring(6);
+		    } else if (urlString.startsWith("file:/") && !PlatformDetection.isWindows()) {
+		        urlString = urlString.substring(5);
+		    }
+		    File file = new File(urlString);
+		    String path = file.getAbsolutePath();
+		    if (path.lastIndexOf(".jar!") != -1)
+		    	path = path.substring(0, path.lastIndexOf(".jar!")) + ".jar";
+		    dir = path;
+		}
+		return new File(dir).getParent();
 	}
     
     /**
