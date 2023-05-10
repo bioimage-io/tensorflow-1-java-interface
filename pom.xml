@@ -119,7 +119,7 @@
 	<properties>
 		<package-name>io.bioimage.modelrunner.tensorflow.v1</package-name>
 
-		<license.licenseName>apache_2</license.licenseName>
+		<license.licenseName>apache_v2</license.licenseName>
 		<license.copyrightOwners>Institut Pasteur and BioImage.IO developers.</license.copyrightOwners>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
