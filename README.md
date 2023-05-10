@@ -11,7 +11,7 @@ To use with maven:
 <dependency>
   <groupId>io.bioimage</groupId>
   <artifactId>dl-modelrunner-tensorflow-1</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
