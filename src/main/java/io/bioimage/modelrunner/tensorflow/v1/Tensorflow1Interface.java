@@ -303,10 +303,12 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			for (Tensor tensor : outputTensors) {args.add(getFilename4Tensor(tensor.getName()) + OUTPUT_FILE_TERMINATION);}
 			ProcessBuilder builder = new ProcessBuilder(args);
 	        Process process = builder.start();
-	        if (process.waitFor() != 0)
+	        int result = process.waitFor();
+	        process.destroy();
+	        if (result != 0)
 	    		throw new RunModelException("Error executing the Tensorflow 1 model in"
-	        			+ " a separate process. The process was not terminated correctly."
-	        			+ System.lineSeparator() + readProcessStringOutput(process));
+	        			+ " a separate process. The process was not terminated correctly.");
+	        			// TODO + System.lineSeparator() + readProcessStringOutput(process));
 		} catch (RunModelException e) {
 			closeModel();
 			throw e;
