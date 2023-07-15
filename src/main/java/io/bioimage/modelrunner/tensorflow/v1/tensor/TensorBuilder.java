@@ -79,8 +79,7 @@ public final class TensorBuilder {
 	 * @return The tensor created from the sequence.
 	 * @throws IllegalArgumentException If the {@link RandomAccessibleInterval} dtype is not supported.
 	 */
-	public static < T extends RealType< T > & NativeType< T > >  Tensor<?> build(
-		RandomAccessibleInterval<T> rai)
+	public static  Tensor<?> build(RandomAccessibleInterval<?> rai)
 	{
 		if (Util.getTypeFromInterval(rai) instanceof ByteType) {
 			return buildByte((RandomAccessibleInterval<ByteType>) rai);
