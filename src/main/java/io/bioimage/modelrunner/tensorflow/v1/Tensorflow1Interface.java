@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.tensorflow.SavedModelBundle;
@@ -184,7 +183,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
     public Tensorflow1Interface() throws IOException
     {
     	boolean isMac = PlatformDetection.isMacOS();
-    	boolean isIntel = new PlatformDetection().getArch().equals(PlatformDetection.ARCH_X86_64);
+    	boolean isIntel = PlatformDetection.getArch().equals(PlatformDetection.ARCH_X86_64);
     	if (false && isMac && isIntel) {
     		interprocessing = true;
     		tmpDir = getTemporaryDir();
