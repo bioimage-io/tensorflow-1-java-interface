@@ -303,7 +303,7 @@ public final class ImgLib2ToMappedBuffer
         } else if (dtype instanceof DoubleType) {
         	nBytesDt = 8;
         } else {
-            throw new IllegalArgumentException("Unsupported tensor type: " + dtype);
+            throw new IllegalArgumentException("Unsupported tensor type: " + dtype.getClass());
         }
     	return startLen + nBytesDt * totSizeFlat;
     }
