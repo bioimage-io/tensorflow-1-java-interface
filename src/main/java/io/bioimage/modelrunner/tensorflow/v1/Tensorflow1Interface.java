@@ -22,7 +22,10 @@ package io.bioimage.modelrunner.tensorflow.v1;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
+import io.bioimage.modelrunner.bioimageio.download.DownloadModel;
 import io.bioimage.modelrunner.engine.DeepLearningEngineInterface;
+import io.bioimage.modelrunner.engine.EngineInfo;
 import io.bioimage.modelrunner.exceptions.LoadModelException;
 import io.bioimage.modelrunner.exceptions.RunModelException;
 import io.bioimage.modelrunner.system.PlatformDetection;
@@ -31,6 +34,8 @@ import io.bioimage.modelrunner.tensorflow.v1.tensor.ImgLib2Builder;
 import io.bioimage.modelrunner.tensorflow.v1.tensor.TensorBuilder;
 import io.bioimage.modelrunner.tensorflow.v1.tensor.mappedbuffer.ImgLib2ToMappedBuffer;
 import io.bioimage.modelrunner.tensorflow.v1.tensor.mappedbuffer.MappedBufferToImgLib2;
+import io.bioimage.modelrunner.utils.Constants;
+import io.bioimage.modelrunner.utils.ZipUtils;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -40,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -231,6 +237,11 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			this.modelFolder = modelFolder;
 			return;
 		}
+		try {
+			checkModelUnzipped();
+		} catch (Exception e) {
+			throw new LoadModelException(e.toString());
+		}
 		model = SavedModelBundle.load(modelFolder, "serve");
 		byte[] byteGraph = model.metaGraphDef();
 		try {
@@ -239,7 +250,44 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 		catch (InvalidProtocolBufferException e) {
 			closeModel();
-			throw new LoadModelException();
+			throw new LoadModelException(e.toString());
+		}
+	}
+	
+	/**
+	 * Check if an unzipped tensorflow model exists in the model folder, 
+	 * and if not look for it and unzip it
+	 * @throws LoadModelException if no model is found
+	 * @throws IOException if there is any error unzipping the model
+	 * @throws Exception if there is any error related to model packaging
+	 */
+	private void checkModelUnzipped() throws LoadModelException, IOException, Exception {
+		if (new File(modelFolder, "variables").isDirectory()
+				&& new File(modelFolder, "saved_model.pb").isFile())
+			return;
+		unzipTfWeights(ModelDescriptor.readFromLocalFile(modelFolder + File.separator + Constants.RDF_FNAME));
+	}
+	
+	/**
+	 * Method that unzips the tensorflow model zip into the variables
+	 * folder and .pb file, if they are saved in a zip
+	 * @throws LoadModelException if not zip file is found
+	 * @throws IOException if there is any error unzipping
+	 */
+	private void unzipTfWeights(ModelDescriptor descriptor) throws LoadModelException, IOException {
+		if (new File(modelFolder, "tf_weights.zip").isFile()) {
+			System.out.println("Unzipping model...");
+			ZipUtils.unzipFolder(modelFolder + File.separator + "tf_weights.zip", modelFolder);
+		} else if ( descriptor.getWeights().getSupportedDLFrameworks()
+				.contains(EngineInfo.getBioimageioTfKey()) ) {
+			String source = descriptor.getWeights().getSupportedWeights().stream()
+					.filter(ww -> ww.getFramework().equals(EngineInfo.getBioimageioTfKey()))
+					.findFirst().get().getSource();
+			source = DownloadModel.getFileNameFromURLString(source);
+			System.out.println("Unzipping model...");
+			ZipUtils.unzipFolder(modelFolder + File.separator + source, modelFolder);
+		} else {
+			throw new LoadModelException("No model file was found in the model folder");
 		}
 	}
 
