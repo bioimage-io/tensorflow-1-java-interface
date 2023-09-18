@@ -233,8 +233,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	public void loadModel(String modelFolder, String modelSource)
 		throws LoadModelException
 	{
+		this.modelFolder = modelFolder;
 		if (interprocessing) {
-			this.modelFolder = modelFolder;
 			return;
 		}
 		try {
