@@ -644,7 +644,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	private static String padSpecialJavaBin(String javaBin) {
 		String[] specialChars = new String[] {" "};
         for (String schar : specialChars) {
-        	if (javaBin.contains(schar)) {
+        	if (javaBin.contains(schar) && PlatformDetection.isWindows()) {
         		return "\"" + javaBin + "\"";
         	}
         }
