@@ -118,7 +118,7 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( new long[tensorShape.length], flatArr, sArr );
+		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
 		ByteBuffer buff = ByteBuffer.wrap(flatArr);
 		Tensor<UInt8> ndarray = Tensor.create(UInt8.class, ogShape, buff);
 		return ndarray;
@@ -145,7 +145,7 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( new long[tensorShape.length], flatArr, sArr );
+		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
 		IntBuffer buff = IntBuffer.wrap(flatArr);
 		Tensor<Integer> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
@@ -172,7 +172,7 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( new long[tensorShape.length], flatArr, sArr );
+		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
 		FloatBuffer buff = FloatBuffer.wrap(flatArr);
 		Tensor<Float> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
@@ -199,7 +199,7 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( new long[tensorShape.length], flatArr, sArr );
+		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
 		DoubleBuffer buff = DoubleBuffer.wrap(flatArr);
 		Tensor<Double> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
