@@ -21,14 +21,12 @@
 package io.bioimage.modelrunner.tensorflow.v1.tensor;
 
 import io.bioimage.modelrunner.tensor.Utils;
-import io.bioimage.modelrunner.utils.IndexingUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.blocks.PrimitiveBlocks;
 import net.imglib2.img.Img;
@@ -39,7 +37,6 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
-import net.imglib2.view.IntervalView;
 
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
@@ -111,6 +108,7 @@ public final class TensorBuilder {
 	private static Tensor<UInt8> buildByte(
 		RandomAccessibleInterval<ByteType> tensor)
 	{
+		long[] ogShape = tensor.dimensionsAsLongArray();
 		tensor = Utils.transpose(tensor);
 		PrimitiveBlocks< ByteType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
@@ -122,8 +120,7 @@ public final class TensorBuilder {
 			sArr[i] = (int) tensorShape[i];
 		blocks.copy( new long[tensorShape.length], flatArr, sArr );
 		ByteBuffer buff = ByteBuffer.wrap(flatArr);
-		Tensor<UInt8> ndarray = Tensor.create(UInt8.class, tensor
-			.dimensionsAsLongArray(), buff);
+		Tensor<UInt8> ndarray = Tensor.create(UInt8.class, ogShape, buff);
 		return ndarray;
 	}
 
@@ -138,6 +135,7 @@ public final class TensorBuilder {
 	private static Tensor<Integer> buildInt(
 		RandomAccessibleInterval<IntType> tensor)
 	{
+		long[] ogShape = tensor.dimensionsAsLongArray();
 		tensor = Utils.transpose(tensor);
 		PrimitiveBlocks< IntType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
@@ -149,8 +147,7 @@ public final class TensorBuilder {
 			sArr[i] = (int) tensorShape[i];
 		blocks.copy( new long[tensorShape.length], flatArr, sArr );
 		IntBuffer buff = IntBuffer.wrap(flatArr);
-		Tensor<Integer> ndarray = Tensor.create(tensor.dimensionsAsLongArray(),
-			buff);
+		Tensor<Integer> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
 	}
 
@@ -165,6 +162,7 @@ public final class TensorBuilder {
 	private static Tensor<Float> buildFloat(
 		RandomAccessibleInterval<FloatType> tensor)
 	{
+		long[] ogShape = tensor.dimensionsAsLongArray();
 		tensor = Utils.transpose(tensor);
 		PrimitiveBlocks< FloatType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
@@ -176,8 +174,7 @@ public final class TensorBuilder {
 			sArr[i] = (int) tensorShape[i];
 		blocks.copy( new long[tensorShape.length], flatArr, sArr );
 		FloatBuffer buff = FloatBuffer.wrap(flatArr);
-		Tensor<Float> ndarray = Tensor.create(tensor.dimensionsAsLongArray(),
-			buff);
+		Tensor<Float> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
 	}
 
@@ -192,6 +189,7 @@ public final class TensorBuilder {
 	private static Tensor<Double> buildDouble(
 		RandomAccessibleInterval<DoubleType> tensor)
 	{
+		long[] ogShape = tensor.dimensionsAsLongArray();
 		tensor = Utils.transpose(tensor);
 		PrimitiveBlocks< DoubleType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
@@ -203,8 +201,7 @@ public final class TensorBuilder {
 			sArr[i] = (int) tensorShape[i];
 		blocks.copy( new long[tensorShape.length], flatArr, sArr );
 		DoubleBuffer buff = DoubleBuffer.wrap(flatArr);
-		Tensor<Double> ndarray = Tensor.create(tensor.dimensionsAsLongArray(),
-			buff);
+		Tensor<Double> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
 	}
 }

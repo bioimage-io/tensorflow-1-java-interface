@@ -384,7 +384,11 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		if (outputNDArrays.size() != outputTensors.size())
 			throw new RunModelException(outputNDArrays.size(), outputTensors.size());
 		for (int i = 0; i < outputNDArrays.size(); i++) {
-			outputTensors.get(i).setData(ImgLib2Builder.build(outputNDArrays.get(i)));
+			try {
+				outputTensors.get(i).setData(ImgLib2Builder.build(outputNDArrays.get(i)));
+			} catch (IllegalArgumentException ex) {
+				throw new RunModelException(ex.toString());
+			}
 		}
 	}
 
