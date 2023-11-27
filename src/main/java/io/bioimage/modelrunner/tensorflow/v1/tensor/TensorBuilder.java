@@ -21,12 +21,15 @@
 package io.bioimage.modelrunner.tensorflow.v1.tensor;
 
 import io.bioimage.modelrunner.tensor.Utils;
+import io.bioimage.modelrunner.utils.CommonUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
+import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.blocks.PrimitiveBlocks;
 import net.imglib2.img.Img;
@@ -34,12 +37,17 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
+import net.imglib2.view.Views;
 
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
+
+import ai.djl.ndarray.NDArray;
+import ai.djl.ndarray.types.Shape;
 
 /**
  * A TensorFlow {@link Tensor} builder for {@link Img} and
@@ -79,8 +87,8 @@ public final class TensorBuilder {
 	 */
 	public static  Tensor<?> build(RandomAccessibleInterval<?> rai)
 	{
-		if (Util.getTypeFromInterval(rai) instanceof ByteType) {
-			return buildByte((RandomAccessibleInterval<ByteType>) rai);
+		if (Util.getTypeFromInterval(rai) instanceof UnsignedByteType) {
+			return buildUByte((RandomAccessibleInterval<UnsignedByteType>) rai);
 		}
 		else if (Util.getTypeFromInterval(rai) instanceof IntType) {
 			return buildInt((RandomAccessibleInterval<IntType>) rai);
@@ -105,12 +113,14 @@ public final class TensorBuilder {
 	 * @param tensor The {@link RandomAccessibleInterval} to be converted.
 	 * @return The {@link Tensor} created from the sequence.
 	 */
-	private static Tensor<UInt8> buildByte(
-		RandomAccessibleInterval<ByteType> tensor)
+	private static Tensor<UInt8> buildUByte(
+		RandomAccessibleInterval<UnsignedByteType> tensor)
 	{
 		long[] ogShape = tensor.dimensionsAsLongArray();
+		if (CommonUtils.int32Overflows(ogShape))
+			throw new IllegalArgumentException("Provided tensor with shape " + Arrays.toString(ogShape) 
+								+ " is too big. Max number of elements per tensor supported: " + Integer.MAX_VALUE);
 		tensor = Utils.transpose(tensor);
-		PrimitiveBlocks< ByteType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
 		int size = 1;
 		for (long ll : tensorShape) size *= ll;
@@ -118,7 +128,13 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
+
+		Cursor<UnsignedByteType> cursor = Views.flatIterable(tensor).cursor();
+		int i = 0;
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			flatArr[i ++] = cursor.get().getByte();
+		}
 		ByteBuffer buff = ByteBuffer.wrap(flatArr);
 		Tensor<UInt8> ndarray = Tensor.create(UInt8.class, ogShape, buff);
 		return ndarray;
@@ -136,8 +152,10 @@ public final class TensorBuilder {
 		RandomAccessibleInterval<IntType> tensor)
 	{
 		long[] ogShape = tensor.dimensionsAsLongArray();
+		if (CommonUtils.int32Overflows(ogShape))
+			throw new IllegalArgumentException("Provided tensor with shape " + Arrays.toString(ogShape) 
+								+ " is too big. Max number of elements per tensor supported: " + Integer.MAX_VALUE);
 		tensor = Utils.transpose(tensor);
-		PrimitiveBlocks< IntType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
 		int size = 1;
 		for (long ll : tensorShape) size *= ll;
@@ -145,7 +163,13 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
+
+		Cursor<IntType> cursor = Views.flatIterable(tensor).cursor();
+		int i = 0;
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			flatArr[i ++] = cursor.get().get();
+		}
 		IntBuffer buff = IntBuffer.wrap(flatArr);
 		Tensor<Integer> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
@@ -163,8 +187,10 @@ public final class TensorBuilder {
 		RandomAccessibleInterval<FloatType> tensor)
 	{
 		long[] ogShape = tensor.dimensionsAsLongArray();
+		if (CommonUtils.int32Overflows(ogShape))
+			throw new IllegalArgumentException("Provided tensor with shape " + Arrays.toString(ogShape) 
+								+ " is too big. Max number of elements per tensor supported: " + Integer.MAX_VALUE);
 		tensor = Utils.transpose(tensor);
-		PrimitiveBlocks< FloatType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
 		int size = 1;
 		for (long ll : tensorShape) size *= ll;
@@ -172,7 +198,13 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
+
+		Cursor<FloatType> cursor = Views.flatIterable(tensor).cursor();
+		int i = 0;
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			flatArr[i ++] = cursor.get().get();
+		}
 		FloatBuffer buff = FloatBuffer.wrap(flatArr);
 		Tensor<Float> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
@@ -190,8 +222,10 @@ public final class TensorBuilder {
 		RandomAccessibleInterval<DoubleType> tensor)
 	{
 		long[] ogShape = tensor.dimensionsAsLongArray();
+		if (CommonUtils.int32Overflows(ogShape))
+			throw new IllegalArgumentException("Provided tensor with shape " + Arrays.toString(ogShape) 
+								+ " is too big. Max number of elements per tensor supported: " + Integer.MAX_VALUE);
 		tensor = Utils.transpose(tensor);
-		PrimitiveBlocks< DoubleType > blocks = PrimitiveBlocks.of( tensor );
 		long[] tensorShape = tensor.dimensionsAsLongArray();
 		int size = 1;
 		for (long ll : tensorShape) size *= ll;
@@ -199,7 +233,13 @@ public final class TensorBuilder {
 		int[] sArr = new int[tensorShape.length];
 		for (int i = 0; i < sArr.length; i ++)
 			sArr[i] = (int) tensorShape[i];
-		blocks.copy( tensor.minAsLongArray(), flatArr, sArr );
+
+		Cursor<DoubleType> cursor = Views.flatIterable(tensor).cursor();
+		int i = 0;
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			flatArr[i ++] = cursor.get().get();
+		}
 		DoubleBuffer buff = DoubleBuffer.wrap(flatArr);
 		Tensor<Double> ndarray = Tensor.create(ogShape, buff);
 		return ndarray;
