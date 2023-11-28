@@ -39,6 +39,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 /**
  * Class that maps {@link Tensor} objects to {@link ByteBuffer} objects.
@@ -121,14 +122,7 @@ public final class ImgLib2ToMappedBuffer
      */
     private static void buildByte(RandomAccessibleInterval<ByteType> imgTensor, ByteBuffer byteBuffer)
     {
-    	Cursor<ByteType> tensorCursor;
-		if (imgTensor instanceof IntervalView)
-			tensorCursor = ((IntervalView<ByteType>) imgTensor).cursor();
-		else if (imgTensor instanceof Img)
-			tensorCursor = ((Img<ByteType>) imgTensor).cursor();
-		else
-			throw new IllegalArgumentException("The data of the " + Tensor.class + " has "
-					+ "to be an instance of " + Img.class + " or " + IntervalView.class);
+		Cursor<ByteType> tensorCursor = Views.flatIterable(imgTensor).cursor();
 		while (tensorCursor.hasNext()) {
 			tensorCursor.fwd();
 			byteBuffer.put(tensorCursor.get().getByte());
@@ -146,14 +140,7 @@ public final class ImgLib2ToMappedBuffer
      */
     private static void buildInt(RandomAccessibleInterval<IntType> imgTensor, ByteBuffer byteBuffer)
     {
-    	Cursor<IntType> tensorCursor;
-		if (imgTensor instanceof IntervalView)
-			tensorCursor = ((IntervalView<IntType>) imgTensor).cursor();
-		else if (imgTensor instanceof Img)
-			tensorCursor = ((Img<IntType>) imgTensor).cursor();
-		else
-			throw new IllegalArgumentException("The data of the " + Tensor.class + " has "
-					+ "to be an instance of " + Img.class + " or " + IntervalView.class);
+		Cursor<IntType> tensorCursor = Views.flatIterable(imgTensor).cursor();
 		while (tensorCursor.hasNext()) {
 			tensorCursor.fwd();
 			byteBuffer.putInt(tensorCursor.get().getInt());
@@ -171,14 +158,7 @@ public final class ImgLib2ToMappedBuffer
      */
     private static void buildFloat(RandomAccessibleInterval<FloatType> imgTensor, ByteBuffer byteBuffer)
     {
-    	Cursor<FloatType> tensorCursor;
-		if (imgTensor instanceof IntervalView)
-			tensorCursor = ((IntervalView<FloatType>) imgTensor).cursor();
-		else if (imgTensor instanceof Img)
-			tensorCursor = ((Img<FloatType>) imgTensor).cursor();
-		else
-			throw new IllegalArgumentException("The data of the " + Tensor.class + " has "
-					+ "to be an instance of " + Img.class + " or " + IntervalView.class);
+		Cursor<FloatType> tensorCursor = Views.flatIterable(imgTensor).cursor();
 		while (tensorCursor.hasNext()) {
 			tensorCursor.fwd();
         	byteBuffer.putFloat(tensorCursor.get().getRealFloat());
@@ -196,14 +176,7 @@ public final class ImgLib2ToMappedBuffer
      */
     private static void buildDouble(RandomAccessibleInterval<DoubleType> imgTensor, ByteBuffer byteBuffer)
     {
-    	Cursor<DoubleType> tensorCursor;
-		if (imgTensor instanceof IntervalView)
-			tensorCursor = ((IntervalView<DoubleType>) imgTensor).cursor();
-		else if (imgTensor instanceof Img)
-			tensorCursor = ((Img<DoubleType>) imgTensor).cursor();
-		else
-			throw new IllegalArgumentException("The data of the " + Tensor.class + " has "
-					+ "to be an instance of " + Img.class + " or " + IntervalView.class);
+		Cursor<DoubleType> tensorCursor = Views.flatIterable(imgTensor).cursor();
 		while (tensorCursor.hasNext()) {
 			tensorCursor.fwd();
         	byteBuffer.putDouble(tensorCursor.get().getRealDouble());
