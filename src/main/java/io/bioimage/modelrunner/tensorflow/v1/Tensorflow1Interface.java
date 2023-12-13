@@ -278,9 +278,9 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		if (new File(modelFolder, "tf_weights.zip").isFile()) {
 			System.out.println("Unzipping model...");
 			ZipUtils.unzipFolder(modelFolder + File.separator + "tf_weights.zip", modelFolder);
-		} else if ( descriptor.getWeights().getSupportedDLFrameworks()
+		} else if ( descriptor.getWeights().getAllSuportedWeightNames()
 				.contains(EngineInfo.getBioimageioTfKey()) ) {
-			String source = descriptor.getWeights().getSupportedWeights().stream()
+			String source = descriptor.getWeights().gettAllSupportedWeightObjects().stream()
 					.filter(ww -> ww.getFramework().equals(EngineInfo.getBioimageioTfKey()))
 					.findFirst().get().getSource();
 			source = DownloadModel.getFileNameFromURLString(source);

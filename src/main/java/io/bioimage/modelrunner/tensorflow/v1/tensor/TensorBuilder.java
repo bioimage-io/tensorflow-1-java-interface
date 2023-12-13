@@ -46,9 +46,6 @@ import net.imglib2.view.Views;
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
 
-import ai.djl.ndarray.NDArray;
-import ai.djl.ndarray.types.Shape;
-
 /**
  * A TensorFlow {@link Tensor} builder for {@link Img} and
  * {@link io.bioimage.modelrunner.tensor.Tensor} objects.
