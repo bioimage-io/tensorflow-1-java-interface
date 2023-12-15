@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -55,7 +54,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -151,6 +149,10 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
      * File extension for the temporal files used for interprocessing
      */
     final private static String FILE_EXTENSION = ".dat";
+	/**
+	 * Name without vesion of the JAR created for this library
+	 */
+	private static final String JAR_FILE_NAME = "dl-modelrunner-tensorflow-";
 
     /**
      * The loaded Tensorflow 1 model
@@ -678,6 +680,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
         String codeSource = protectionDomain.getCodeSource().getLocation().getPath();
         String f_name = URLDecoder.decode(codeSource, StandardCharsets.UTF_8.toString());
 	        for (File ff : new File(f_name).getParentFile().listFiles()) {
+	        	if (ff.getName().startsWith(JAR_FILE_NAME) && !ff.getAbsolutePath().equals(f_name))
+	        		continue;
 	        	classpath += ff.getAbsolutePath() + File.pathSeparator;
 	        }
         String className = Tensorflow1Interface.class.getName();
