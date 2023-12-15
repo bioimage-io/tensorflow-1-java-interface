@@ -127,6 +127,7 @@
 
 		<dl-modelrunner.version>0.5.0</dl-modelrunner.version>
 		<protobuf.version>3.2.0</protobuf.version>
+		<tf.version>1.15.0</tf.version>
 	</properties>
 
 	<repositories>
@@ -145,6 +146,13 @@
 		<dependency>
 			<groupId>org.tensorflow</groupId>
 			<artifactId>tensorflow</artifactId>
+			<version>${tf.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>libtensorflow_jni</artifactId>
+			<version>${tf.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
