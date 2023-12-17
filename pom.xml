@@ -11,7 +11,7 @@
 
 	<groupId>io.bioimage</groupId>
 	<artifactId>dl-modelrunner-tensorflow-1</artifactId>
-	<version>0.3.9-SNAPSHOT</version>
+	<version>0.3.9</version>
 
 	<name>TensorFlow 1 engine for DL-model-runner</name>
 	<description>This project complements the DL-model runner acting as the engine that works loading models 
@@ -105,7 +105,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/bioimage-io/tensorflow-1-java-interface</connection>
 		<developerConnection>scm:git:git@github.com:bioimage-io/tensorflow-1-java-interface</developerConnection>
-		<tag>HEAD</tag>
+		<tag>dl-modelrunner-tensorflow-1-0.3.9</tag>
 		<url>https://github.com/bioimage-io/tensorflow-1-java-interface</url>
 	</scm>
 	<issueManagement>
