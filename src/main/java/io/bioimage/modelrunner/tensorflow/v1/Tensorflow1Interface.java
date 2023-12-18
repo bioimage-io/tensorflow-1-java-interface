@@ -704,11 +704,12 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
         ProtectionDomain protectionDomain = Tensorflow1Interface.class.getProtectionDomain();
         String codeSource = protectionDomain.getCodeSource().getLocation().getPath();
         String f_name = URLDecoder.decode(codeSource, StandardCharsets.UTF_8.toString());
-	        for (File ff : new File(f_name).getParentFile().listFiles()) {
-	        	if (ff.getName().startsWith(JAR_FILE_NAME) && !ff.getAbsolutePath().equals(f_name))
-	        		continue;
-	        	classpath += ff.getAbsolutePath() + File.pathSeparator;
-	        }
+        f_name = new File(f_name).getAbsolutePath();
+        for (File ff : new File(f_name).getParentFile().listFiles()) {
+        	if (ff.getName().startsWith(JAR_FILE_NAME) && !ff.getAbsolutePath().equals(f_name))
+        		continue;
+        	classpath += ff.getAbsolutePath() + File.pathSeparator;
+        }
         String className = Tensorflow1Interface.class.getName();
         List<String> command = new LinkedList<String>();
         command.add(padSpecialJavaBin(javaBin));
