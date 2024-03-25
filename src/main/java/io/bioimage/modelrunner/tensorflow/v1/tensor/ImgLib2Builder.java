@@ -160,7 +160,7 @@ public final class ImgLib2Builder {
 	 */
 	private static RandomAccessibleInterval<DoubleType> buildFromTensorDouble(Tensor<Double> tensor) {
 		long[] arrayShape = tensor.shape();
-		if (CommonUtils.int32Overflows(arrayShape, 1))
+		if (CommonUtils.int32Overflows(arrayShape, 8))
 			throw new IllegalArgumentException("Model output tensor with shape " + Arrays.toString(arrayShape) 
 								+ " is too big. Max number of elements per double output tensor supported: " + Integer.MAX_VALUE / 8);
 		long[] tensorShape = new long[arrayShape.length];
