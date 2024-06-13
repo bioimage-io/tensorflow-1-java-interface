@@ -125,7 +125,7 @@
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
-		<dl-modelrunner.version>0.5.6</dl-modelrunner.version>
+		<dl-modelrunner.version>0.5.8</dl-modelrunner.version>
 		<protobuf.version>3.5.1</protobuf.version>
 		<tf.version>1.15.0</tf.version>
 	</properties>
