@@ -11,7 +11,7 @@
 
 	<groupId>io.bioimage</groupId>
 	<artifactId>dl-modelrunner-tensorflow-1</artifactId>
-	<version>0.4.1-SNAPSHOT</version>
+	<version>0.4.2-SNAPSHOT</version>
 
 	<name>TensorFlow 1 engine for DL-model-runner</name>
 	<description>This project complements the DL-model runner acting as the engine that works loading models 
