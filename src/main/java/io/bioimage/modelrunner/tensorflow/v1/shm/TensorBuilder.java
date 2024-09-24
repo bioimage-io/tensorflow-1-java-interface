@@ -40,19 +40,7 @@ import java.nio.LongBuffer;
 import java.util.Arrays;
 
 import org.tensorflow.Tensor;
-import org.tensorflow.ndarray.Shape;
-import org.tensorflow.ndarray.buffer.ByteDataBuffer;
-import org.tensorflow.ndarray.buffer.DoubleDataBuffer;
-import org.tensorflow.ndarray.buffer.FloatDataBuffer;
-import org.tensorflow.ndarray.buffer.IntDataBuffer;
-import org.tensorflow.ndarray.buffer.LongDataBuffer;
-import org.tensorflow.ndarray.impl.buffer.raw.RawDataBufferFactory;
-import org.tensorflow.types.TFloat32;
-import org.tensorflow.types.TFloat64;
-import org.tensorflow.types.TInt32;
-import org.tensorflow.types.TInt64;
-import org.tensorflow.types.TUint8;
-import org.tensorflow.types.family.TType;
+import org.tensorflow.types.UInt8;
 
 /**
  * A TensorFlow 2 {@link Tensor} builder from {@link Img} and
@@ -80,7 +68,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the type of the {@link RandomAccessibleInterval}
 	 *  is not supported
 	 */
-	public static Tensor<? extends TType> build(SharedMemoryArray array) throws IllegalArgumentException
+	public static Tensor<?> build(SharedMemoryArray array) throws IllegalArgumentException
 	{
 		// Create an Icy sequence of the same type of the tensor
 		if (array.getOriginalDataType().equals("uint8")) {
@@ -113,7 +101,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the input {@link RandomAccessibleInterval} type is
 	 * not compatible
 	 */
-	public static Tensor<TUint8> buildUByte(SharedMemoryArray tensor)
+	public static Tensor<UInt8> buildUByte(SharedMemoryArray tensor)
 		throws IllegalArgumentException
 	{
 		long[] ogShape = tensor.getOriginalShape();
@@ -123,8 +111,7 @@ public final class TensorBuilder {
 		if (!tensor.isNumpyFormat())
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
-		ByteDataBuffer dataBuffer = RawDataBufferFactory.create(buff.array(), false);
-		Tensor<TUint8> ndarray = Tensor.of(TUint8.DTYPE, Shape.of(ogShape), dataBuffer);
+		Tensor<UInt8> ndarray = Tensor.create(UInt8.class, ogShape, buff);
 		return ndarray;
 	}
 
@@ -138,7 +125,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the input {@link RandomAccessibleInterval} type is
 	 * not compatible
 	 */
-	public static Tensor<TInt32> buildInt(SharedMemoryArray tensor)
+	public static Tensor<Integer> buildInt(SharedMemoryArray tensor)
 		throws IllegalArgumentException
 	{
 		long[] ogShape = tensor.getOriginalShape();
@@ -151,8 +138,7 @@ public final class TensorBuilder {
 		IntBuffer intBuff = buff.asIntBuffer();
 		int[] intArray = new int[intBuff.capacity()];
 		intBuff.get(intArray);
-		IntDataBuffer dataBuffer = RawDataBufferFactory.create(intArray, false);
-		Tensor<TInt32> ndarray = TInt32.tensorOf(Shape.of(ogShape), dataBuffer);
+		Tensor<Integer> ndarray = Tensor.create(ogShape, intBuff);
 		return ndarray;
 	}
 
@@ -166,7 +152,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the input {@link RandomAccessibleInterval} type is
 	 * not compatible
 	 */
-	private static Tensor<TInt64> buildLong(SharedMemoryArray tensor)
+	private static Tensor<Long> buildLong(SharedMemoryArray tensor)
 		throws IllegalArgumentException
 	{
 		long[] ogShape = tensor.getOriginalShape();
@@ -179,8 +165,7 @@ public final class TensorBuilder {
 		LongBuffer longBuff = buff.asLongBuffer();
 		long[] longArray = new long[longBuff.capacity()];
 		longBuff.get(longArray);
-		LongDataBuffer dataBuffer = RawDataBufferFactory.create(longArray, false);
-		Tensor<TInt64> ndarray = TInt64.tensorOf(Shape.of(ogShape), dataBuffer);
+		Tensor<Long> ndarray = Tensor.create(ogShape, longBuff);
 		return ndarray;
 	}
 
@@ -194,7 +179,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the input {@link RandomAccessibleInterval} type is
 	 * not compatible
 	 */
-	public static Tensor<TFloat32> buildFloat(SharedMemoryArray tensor)
+	public static Tensor<Float> buildFloat(SharedMemoryArray tensor)
 		throws IllegalArgumentException
 	{
 		long[] ogShape = tensor.getOriginalShape();
@@ -207,8 +192,7 @@ public final class TensorBuilder {
 		FloatBuffer floatBuff = buff.asFloatBuffer();
 		float[] floatArray = new float[floatBuff.capacity()];
 		floatBuff.get(floatArray);
-		FloatDataBuffer dataBuffer = RawDataBufferFactory.create(floatArray, false);
-		Tensor<TFloat32> ndarray = TFloat32.tensorOf(Shape.of(ogShape), dataBuffer);
+		Tensor<Float> ndarray = Tensor.create(ogShape, floatBuff);
 		return ndarray;
 	}
 
@@ -222,7 +206,7 @@ public final class TensorBuilder {
 	 * @throws IllegalArgumentException if the input {@link RandomAccessibleInterval} type is
 	 * not compatible
 	 */
-	private static Tensor<TFloat64> buildDouble(SharedMemoryArray tensor)
+	private static Tensor<Double> buildDouble(SharedMemoryArray tensor)
 		throws IllegalArgumentException
 	{
 		long[] ogShape = tensor.getOriginalShape();
@@ -235,8 +219,7 @@ public final class TensorBuilder {
 		DoubleBuffer doubleBuff = buff.asDoubleBuffer();
 		double[] doubleArray = new double[doubleBuff.capacity()];
 		doubleBuff.get(doubleArray);
-		DoubleDataBuffer dataBuffer = RawDataBufferFactory.create(doubleArray, false);
-		Tensor<TFloat64> ndarray = TFloat64.tensorOf(Shape.of(ogShape), dataBuffer);
+		Tensor<Double> ndarray = Tensor.create(ogShape, doubleBuff);
 		return ndarray;
 	}
 }
