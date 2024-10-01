@@ -30,7 +30,6 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
@@ -83,12 +82,6 @@ public final class ImgLib2Builder {
 		}
 	}
 
-	/**
-	 * Builds a {@link RandomAccessibleInterval} from a unsigned byte-typed {@link Tensor}.
-	 * 
-	 * @param tensor The tensor data is read from.
-	 * @return The RandomAccessibleInterval built from the tensor, of type {@link UnsignedByteType}.
-	 */
 	private static RandomAccessibleInterval<UnsignedByteType> buildFromTensorUByte(Tensor<UInt8> tensor) {
 		long[] arrayShape = tensor.shape();
 		if (CommonUtils.int32Overflows(arrayShape, 1))
@@ -106,12 +99,6 @@ public final class ImgLib2Builder {
 		return Utils.transpose(rai);
 	}
 
-	/**
-	 * Builds a {@link RandomAccessibleInterval} from a unsigned integer-typed {@link Tensor}.
-	 * 
-	 * @param tensor The tensor data is read from.
-	 * @return The RandomAccessibleInterval built from the tensor, of type {@link IntType}.
-	 */
 	private static RandomAccessibleInterval<IntType> buildFromTensorInt(Tensor<Integer> tensor) {
 		long[] arrayShape = tensor.shape();
 		if (CommonUtils.int32Overflows(arrayShape, 4))
@@ -129,12 +116,6 @@ public final class ImgLib2Builder {
 		return Utils.transpose(rai);
 	}
 
-	/**
-	 * Builds a {@link RandomAccessibleInterval} from a unsigned float-typed {@link Tensor}.
-	 * 
-	 * @param tensor The tensor data is read from.
-	 * @return The RandomAccessibleInterval built from the tensor, of type {@link FloatType}.
-	 */
 	private static RandomAccessibleInterval<FloatType> buildFromTensorFloat(Tensor<Float> tensor) {
 		long[] arrayShape = tensor.shape();
 		if (CommonUtils.int32Overflows(arrayShape, 4))
@@ -152,12 +133,6 @@ public final class ImgLib2Builder {
 		return Utils.transpose(rai);
 	}
 
-	/**
-	 * Builds a {@link RandomAccessibleInterval} from a unsigned double-typed {@link Tensor}.
-	 * 
-	 * @param tensor The tensor data is read from.
-	 * @return The RandomAccessibleInterval built from the tensor, of type {@link DoubleType}.
-	 */
 	private static RandomAccessibleInterval<DoubleType> buildFromTensorDouble(Tensor<Double> tensor) {
 		long[] arrayShape = tensor.shape();
 		if (CommonUtils.int32Overflows(arrayShape, 8))

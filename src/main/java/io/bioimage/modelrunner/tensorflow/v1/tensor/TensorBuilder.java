@@ -31,11 +31,9 @@ import java.util.Arrays;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.blocks.PrimitiveBlocks;
 import net.imglib2.img.Img;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -82,6 +80,7 @@ public final class TensorBuilder {
 	 * @return The tensor created from the sequence.
 	 * @throws IllegalArgumentException If the {@link RandomAccessibleInterval} dtype is not supported.
 	 */
+	@SuppressWarnings("unchecked")
 	public static  Tensor<?> build(RandomAccessibleInterval<?> rai)
 	{
 		if (Util.getTypeFromInterval(rai) instanceof UnsignedByteType) {
@@ -102,14 +101,6 @@ public final class TensorBuilder {
 		}
 	}
 
-	/**
-	 * Creates a unsigned byte-typed {@link Tensor} based on the provided
-	 * {@link RandomAccessibleInterval} and the desired dimension order for the
-	 * resulting tensor.
-	 * 
-	 * @param tensor The {@link RandomAccessibleInterval} to be converted.
-	 * @return The {@link Tensor} created from the sequence.
-	 */
 	private static Tensor<UInt8> buildUByte(
 		RandomAccessibleInterval<UnsignedByteType> tensor)
 	{
@@ -137,14 +128,6 @@ public final class TensorBuilder {
 		return ndarray;
 	}
 
-	/**
-	 * Creates a integer-typed {@link Tensor} based on the provided
-	 * {@link RandomAccessibleInterval} and the desired dimension order for the
-	 * resulting tensor.
-	 *  
-	 * @param tensor The {@link RandomAccessibleInterval} to be converted.
-	 * @return The {@link Tensor} created from the sequence.
-	 */
 	private static Tensor<Integer> buildInt(
 		RandomAccessibleInterval<IntType> tensor)
 	{
@@ -172,14 +155,6 @@ public final class TensorBuilder {
 		return ndarray;
 	}
 
-	/**
-	 * Creates a float-typed {@link Tensor} based on the provided
-	 * {@link RandomAccessibleInterval} and the desired dimension order for the
-	 * resulting tensor.
-	 * 
-	 * @param tensor The {@link RandomAccessibleInterval} to be converted.
-	 * @return The {@link Tensor} created from the sequence.
-	 */
 	private static Tensor<Float> buildFloat(
 		RandomAccessibleInterval<FloatType> tensor)
 	{
@@ -207,14 +182,6 @@ public final class TensorBuilder {
 		return ndarray;
 	}
 
-	/**
-	 * Creates a double-typed {@link Tensor} based on the provided
-	 * {@link RandomAccessibleInterval} and the desired dimension order for the
-	 * resulting tensor.
-	 * 
-	 * @param tensor The {@link RandomAccessibleInterval} to be converted.
-	 * @return The {@link Tensor} created from the sequence.
-	 */
 	private static Tensor<Double> buildDouble(
 		RandomAccessibleInterval<DoubleType> tensor)
 	{
