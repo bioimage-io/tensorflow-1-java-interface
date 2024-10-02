@@ -105,8 +105,6 @@ public final class TensorBuilder {
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
 		IntBuffer intBuff = buff.asIntBuffer();
-		int[] intArray = new int[intBuff.capacity()];
-		intBuff.get(intArray);
 		Tensor<Integer> ndarray = Tensor.create(ogShape, intBuff);
 		return ndarray;
 	}
@@ -122,8 +120,6 @@ public final class TensorBuilder {
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
 		LongBuffer longBuff = buff.asLongBuffer();
-		long[] longArray = new long[longBuff.capacity()];
-		longBuff.get(longArray);
 		Tensor<Long> ndarray = Tensor.create(ogShape, longBuff);
 		return ndarray;
 	}
@@ -139,8 +135,6 @@ public final class TensorBuilder {
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
 		FloatBuffer floatBuff = buff.asFloatBuffer();
-		float[] floatArray = new float[floatBuff.capacity()];
-		floatBuff.get(floatArray);
 		Tensor<Float> ndarray = Tensor.create(ogShape, floatBuff);
 		return ndarray;
 	}
@@ -156,8 +150,6 @@ public final class TensorBuilder {
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
 		DoubleBuffer doubleBuff = buff.asDoubleBuffer();
-		double[] doubleArray = new double[doubleBuff.capacity()];
-		doubleBuff.get(doubleArray);
 		Tensor<Double> ndarray = Tensor.create(ogShape, doubleBuff);
 		return ndarray;
 	}
