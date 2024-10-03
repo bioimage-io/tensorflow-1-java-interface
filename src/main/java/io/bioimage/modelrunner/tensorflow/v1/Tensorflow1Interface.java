@@ -514,16 +514,17 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			else if (task.status == TaskStatus.CRASHED)
 				throw new RuntimeException();
 			this.runner.close();
+			this.runner = null;
 			return;
 		} else if (this.interprocessing) {
 			return;
 		}
-		sig = null;
 		if (model != null) {
 			model.session().close();
 			model.close();
 		}
 		model = null;
+		sig = null;
 	}
 
 	// TODO make only one
