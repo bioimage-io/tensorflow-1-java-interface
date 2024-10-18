@@ -641,7 +641,6 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
         if (modelrunnerPath == null || (modelrunnerPath.endsWith("DeepLearningEngineInterface.class") 
         		&& !modelrunnerPath.contains(File.pathSeparator)))
         	modelrunnerPath = System.getProperty("java.class.path");
-    	modelrunnerPath = System.getProperty("java.class.path");
         String classpath =  modelrunnerPath + File.pathSeparator + imglib2Path + File.pathSeparator;
         classpath =  classpath + gsonPath + File.pathSeparator;
         classpath =  classpath + jnaPath + File.pathSeparator;
