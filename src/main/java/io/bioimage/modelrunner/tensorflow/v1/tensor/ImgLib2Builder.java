@@ -118,7 +118,6 @@ public final class ImgLib2Builder {
 
 	private static RandomAccessibleInterval<FloatType> buildFromTensorFloat(Tensor<Float> tensor) {
 		long[] arrayShape = tensor.shape();
-		System.out.println(Arrays.asList(arrayShape));
 		if (CommonUtils.int32Overflows(arrayShape, 4))
 			throw new IllegalArgumentException("Model output tensor with shape " + Arrays.toString(arrayShape) 
 							+ " is too big. Max number of elements per float output tensor supported: " + Integer.MAX_VALUE / 4);
