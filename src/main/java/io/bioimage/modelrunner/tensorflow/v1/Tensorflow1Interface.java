@@ -647,6 +647,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
         classpath =  classpath + gsonPath + File.pathSeparator;
         classpath =  classpath + jnaPath + File.pathSeparator;
         classpath =  classpath + jnaPlatformPath + File.pathSeparator;
+        classpath =  classpath + snakeYaml + File.pathSeparator;
 
         return classpath;
     }
