@@ -93,7 +93,7 @@ public class JavaWorker {
 			} else if (script.equals("close")) {
 				ti.closeModel();
 			}
-		} catch(Exception ex) {
+		} catch(Exception | Error ex) {
 			this.fail(Types.stackTrace(ex));
 			return;
 		}
