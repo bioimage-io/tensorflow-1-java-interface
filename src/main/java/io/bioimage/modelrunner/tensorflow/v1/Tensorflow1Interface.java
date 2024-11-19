@@ -70,6 +70,7 @@ import org.tensorflow.Session;
 import org.tensorflow.framework.MetaGraphDef;
 import org.tensorflow.framework.SignatureDef;
 import org.tensorflow.framework.TensorInfo;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * TODO 
@@ -636,6 +637,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
         String modelrunnerPath = getPathFromClass(DeepLearningEngineInterface.class);
         String imglib2Path = getPathFromClass(NativeType.class);
         String gsonPath = getPathFromClass(Gson.class);
+        String snakeYaml = getPathFromClass(Yaml.class);
         String jnaPath = getPathFromClass(com.sun.jna.Library.class);
         String jnaPlatformPath = getPathFromClass(com.sun.jna.platform.FileUtils.class);
         if (modelrunnerPath == null || (modelrunnerPath.endsWith("DeepLearningEngineInterface.class") 
