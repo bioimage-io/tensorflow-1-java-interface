@@ -25,12 +25,16 @@ import io.bioimage.modelrunner.tensor.shm.SharedMemoryArray;
 import io.bioimage.modelrunner.utils.CommonUtils;
 import net.imglib2.util.Cast;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
@@ -133,6 +137,19 @@ public final class TensorBuilder {
 								+ " is too big. Max number of elements per ubyte tensor supported: " + Integer.MAX_VALUE);
 		if (!tensor.isNumpyFormat())
 			throw new IllegalArgumentException("Shared memory arrays must be saved in numpy format.");
+		try (FileOutputStream fos = new FileOutputStream("/home/carlos/git/interp_inp" + UUID.randomUUID().toString() + ".npy");
+	             FileChannel fileChannel = fos.getChannel()) {
+				ByteBuffer buffer = tensor.getDataBuffer();
+	            // Write the buffer's content to the file
+	            while (buffer.hasRemaining()) {
+	                fileChannel.write(buffer);
+	            }
+	            buffer.rewind();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	        
 		ByteBuffer buff = tensor.getDataBufferNoHeader();
 		FloatBuffer floatBuff = buff.asFloatBuffer();
 		Tensor<Float> ndarray = Tensor.create(ogShape, floatBuff);
