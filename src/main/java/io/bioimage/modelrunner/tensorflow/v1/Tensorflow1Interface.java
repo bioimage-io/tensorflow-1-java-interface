@@ -397,8 +397,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	        		shmaOutputList.add(shm);
 	        	}
 	        	RandomAccessibleInterval<T> rai = shm.getSharedRAI();
-	        	DecodeNumpy.saveNpy("/home/carlos/git/out_" + UUID.randomUUID().toString() + ".npy", rai);
 	        	outputTensors.get(i).setData(Tensor.createCopyOfRaiInWantedDataType(Cast.unchecked(rai), Util.getTypeFromInterval(Cast.unchecked(rai))));
+	        	DecodeNumpy.saveNpy("/home/carlos/git/out_" + UUID.randomUUID().toString() + ".npy", outputTensors.get(i).getData());
 	        }
 		} catch (Exception e) {
 			closeShmas();
