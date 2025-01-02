@@ -124,10 +124,14 @@ public final class ShmBuilder
         SharedMemoryArray shma = SharedMemoryArray.readOrCreate(memoryName, arrayShape, new FloatType(), false, true);
         ByteBuffer buff = shma.getDataBufferNoHeader();
         tensor.writeTo(buff);
-        
+        ByteBuffer buffer = ByteBuffer.allocate(buff.capacity());
+        tensor.writeTo(buffer);
         try (FileOutputStream fos = new FileOutputStream("/home/carlos/git/interp_out" + UUID.randomUUID().toString() + ".npy");
 	             FileChannel fileChannel = fos.getChannel()) {
-               fileChannel.write(ByteBuffer.wrap(tensor.bytesValue()));
+	            // Write the buffer's content to the file
+	            while (buffer.hasRemaining()) {
+	                fileChannel.write(buffer);
+	            }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
