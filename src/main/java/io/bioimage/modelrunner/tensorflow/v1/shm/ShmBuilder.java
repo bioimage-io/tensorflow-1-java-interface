@@ -24,9 +24,12 @@ import io.bioimage.modelrunner.system.PlatformDetection;
 import io.bioimage.modelrunner.tensor.shm.SharedMemoryArray;
 import io.bioimage.modelrunner.utils.CommonUtils;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.tensorflow.Tensor;
 import org.tensorflow.types.UInt8;
@@ -121,6 +124,18 @@ public final class ShmBuilder
         SharedMemoryArray shma = SharedMemoryArray.readOrCreate(memoryName, arrayShape, new FloatType(), false, true);
         ByteBuffer buff = shma.getDataBufferNoHeader();
         tensor.writeTo(buff);
+        try (FileOutputStream fos = new FileOutputStream("/home/carlos/git/interp_out" + UUID.randomUUID().toString() + ".npy");
+	             FileChannel fileChannel = fos.getChannel()) {
+            	buff.rewind();
+	            // Write the buffer's content to the file
+	            while (buff.hasRemaining()) {
+	                fileChannel.write(buff);
+	            }
+	            buff.rewind();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         if (PlatformDetection.isWindows()) shma.close();
     }
 
