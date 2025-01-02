@@ -34,6 +34,7 @@ import io.bioimage.modelrunner.engine.DeepLearningEngineInterface;
 import io.bioimage.modelrunner.engine.EngineInfo;
 import io.bioimage.modelrunner.exceptions.LoadModelException;
 import io.bioimage.modelrunner.exceptions.RunModelException;
+import io.bioimage.modelrunner.numpy.DecodeNumpy;
 import io.bioimage.modelrunner.system.PlatformDetection;
 import io.bioimage.modelrunner.tensor.Tensor;
 import io.bioimage.modelrunner.tensor.shm.SharedMemoryArray;
@@ -63,6 +64,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.tensorflow.SavedModelBundle;
@@ -394,7 +396,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 	        		shm = SharedMemoryArray.read(name);
 	        		shmaOutputList.add(shm);
 	        	}
-	        	RandomAccessibleInterval<?> rai = shm.getSharedRAI();
+	        	RandomAccessibleInterval<T> rai = shm.getSharedRAI();
+	        	DecodeNumpy.saveNpy("/home/carlos/git/out_" + UUID.randomUUID().toString() + ".npy", rai);
 	        	outputTensors.get(i).setData(Tensor.createCopyOfRaiInWantedDataType(Cast.unchecked(rai), Util.getTypeFromInterval(Cast.unchecked(rai))));
 	        }
 		} catch (Exception e) {
