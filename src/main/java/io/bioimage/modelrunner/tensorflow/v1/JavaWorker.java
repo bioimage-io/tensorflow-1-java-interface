@@ -19,6 +19,8 @@ public class JavaWorker {
 	private final String uuid;
 	
 	private final Tensorflow1Interface ti;
+	
+	private Map<String, Object> outputs = new HashMap<String, Object>();
 		
 	private boolean cancelRequested = false;
 
@@ -88,10 +90,17 @@ public class JavaWorker {
 		try {
 			if (script.equals("loadModel")) {
 				ti.loadModel((String) inputs.get("modelFolder"), null);
-			} else if (script.equals("inference")) {
+			} else if (script.equals("run")) {
 				ti.runFromShmas((List<String>) inputs.get("inputs"), (List<String>) inputs.get("outputs"));
+			} else if (script.equals("inference")) {
+				List<String> encodedOutputs = ti.inferenceFromShmas((List<String>) inputs.get("inputs"));
+				HashMap<String, List<String>> out = new HashMap<String, List<String>>();
+				out.put("encoded", encodedOutputs);
+				outputs.put("outputs", out);
 			} else if (script.equals("close")) {
 				ti.closeModel();
+			} else if (script.equals("closeTensors")) {
+				ti.closeFromInterp();
 			}
 		} catch(Exception | Error ex) {
 			this.fail(Types.stackTrace(ex));
@@ -109,7 +118,7 @@ public class JavaWorker {
 	}
 	
 	private void reportCompletion() {
-		respond(ResponseType.COMPLETION, null);
+		respond(ResponseType.COMPLETION, outputs);
 	}
 	
 	private void update(String message, Integer current, Integer maximum) {
@@ -130,7 +139,7 @@ public class JavaWorker {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("task", uuid);
 		response.put("responseType", responseType);
-		if (args != null)
+		if (args != null && args.keySet().size() > 0)
 			response.putAll(args);
 		try {
 			System.out.println(Types.encode(response));
