@@ -29,7 +29,7 @@ import io.bioimage.modelrunner.apposed.appose.Service.Task;
 import io.bioimage.modelrunner.apposed.appose.Service.TaskStatus;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptorFactory;
-import io.bioimage.modelrunner.bioimageio.download.DownloadModel;
+import io.bioimage.modelrunner.download.FileDownloader;
 import io.bioimage.modelrunner.engine.DeepLearningEngineInterface;
 import io.bioimage.modelrunner.engine.EngineInfo;
 import io.bioimage.modelrunner.exceptions.LoadModelException;
@@ -264,7 +264,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 				System.out.println("Unzipping model...");
 				ZipUtils.unzipFolder(new File(modelFolder, source).getAbsolutePath(), modelFolder);
 			} else {
-				source = DownloadModel.getFileNameFromURLString(source);
+				source = FileDownloader.getFileNameFromURLString(source);
 				System.out.println("Unzipping model...");
 				ZipUtils.unzipFolder(modelFolder + File.separator + source, modelFolder);
 			}
