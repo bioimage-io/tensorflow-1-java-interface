@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import io.bioimage.modelrunner.apposed.appose.Types;
-import io.bioimage.modelrunner.apposed.appose.Service.RequestType;
-import io.bioimage.modelrunner.apposed.appose.Service.ResponseType;
+import org.apposed.appose.Service.RequestType;
+import org.apposed.appose.Service.ResponseType;
+import org.apposed.appose.util.Messages;
 
 public class JavaWorker {
 	
@@ -50,7 +50,7 @@ public class JavaWorker {
                 }
                 
                 if (line.isEmpty()) break;
-                Map<String, Object> request = Types.decode(line);
+                Map<String, Object> request = Messages.decode(line);
                 String uuid = (String) request.get("task");
                 String requestType = (String) request.get("requestType");
                 
@@ -103,7 +103,7 @@ public class JavaWorker {
 				ti.closeFromInterp();
 			}
 		} catch(Exception | Error ex) {
-			this.fail(Types.stackTrace(ex));
+			this.fail(Messages.stackTrace(ex));
 			return;
 		}
 		this.reportCompletion();
@@ -142,10 +142,10 @@ public class JavaWorker {
 		if (args != null && args.keySet().size() > 0)
 			response.putAll(args);
 		try {
-			System.out.println(Types.encode(response));
+			System.out.println(Messages.encode(response));
 			System.out.flush();
 		} catch(Exception ex) {
-			this.fail(Types.stackTrace(ex.getCause()));
+			this.fail(Messages.stackTrace(ex));
 		}
 	}
 	
