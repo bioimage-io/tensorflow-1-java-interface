@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apposed.appose.Service.RequestType;
-import org.apposed.appose.Service.ResponseType;
-import org.apposed.appose.util.Messages;
+import io.bioimage.modelrunner.javaworker.NoGroovyMessages;
 
 public class JavaWorker {
 	
@@ -50,17 +48,17 @@ public class JavaWorker {
                 }
                 
                 if (line.isEmpty()) break;
-                Map<String, Object> request = Messages.decode(line);
+                Map<String, Object> request = NoGroovyMessages.decode(line);
                 String uuid = (String) request.get("task");
                 String requestType = (String) request.get("requestType");
                 
-                if (requestType.equals(RequestType.EXECUTE.toString())) {
+                if (requestType.equals(NoGroovyMessages.REQUEST_EXECUTE)) {
                 	String script = (String) request.get("script");
                 	Map<String, Object> inputs = (Map<String, Object>) request.get("inputs");
                 	JavaWorker task = new JavaWorker(uuid, ti);
                 	tasks.put(uuid, task);
                 	task.start(script, inputs);
-                } else if (requestType.equals(RequestType.CANCEL.toString())) {
+                } else if (requestType.equals(NoGroovyMessages.REQUEST_CANCEL)) {
                 	JavaWorker task = (JavaWorker) tasks.get(uuid);
                 	if (task == null) {
                 		System.err.println("No such task: " + uuid);
@@ -103,7 +101,7 @@ public class JavaWorker {
 				ti.closeFromInterp();
 			}
 		} catch(Exception | Error ex) {
-			this.fail(Messages.stackTrace(ex));
+			this.fail(NoGroovyMessages.stackTrace(ex));
 			return;
 		}
 		this.reportCompletion();
@@ -114,11 +112,11 @@ public class JavaWorker {
 	}
 	
 	private void reportLaunch() {
-		respond(ResponseType.LAUNCH, null);
+		respond(NoGroovyMessages.RESPONSE_LAUNCH, null);
 	}
 	
 	private void reportCompletion() {
-		respond(ResponseType.COMPLETION, outputs);
+		respond(NoGroovyMessages.RESPONSE_COMPLETION, outputs);
 	}
 	
 	private void update(String message, Integer current, Integer maximum) {
@@ -132,25 +130,25 @@ public class JavaWorker {
 		
 		if (maximum != null)
 			args.put("maximum", maximum);
-		this.respond(ResponseType.UPDATE, args);
+		this.respond(NoGroovyMessages.RESPONSE_UPDATE, args);
 	}
 	
-	private void respond(ResponseType responseType, Map<String, Object> args) {
+	private void respond(String responseType, Map<String, Object> args) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("task", uuid);
 		response.put("responseType", responseType);
 		if (args != null && args.keySet().size() > 0)
 			response.putAll(args);
 		try {
-			System.out.println(Messages.encode(response));
+				System.out.println(NoGroovyMessages.encode(response));
 			System.out.flush();
 		} catch(Exception ex) {
-			this.fail(Messages.stackTrace(ex));
+				this.fail(NoGroovyMessages.stackTrace(ex));
 		}
 	}
 	
 	private void cancel() {
-		this.respond(ResponseType.CANCELATION, null);
+		this.respond(NoGroovyMessages.RESPONSE_CANCELATION, null);
 	}
 	
 	private void fail(String error) {
@@ -159,7 +157,7 @@ public class JavaWorker {
 			args = new HashMap<String, Object>();
 			args.put("error", error);
 		}
-        respond(ResponseType.FAILURE, args);
+        respond(NoGroovyMessages.RESPONSE_FAILURE, args);
 	}
 
 }
