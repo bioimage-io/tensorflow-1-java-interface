@@ -23,10 +23,6 @@ package io.bioimage.modelrunner.tensorflow.v1;
 import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import io.bioimage.modelrunner.apposed.appose.Service;
-import io.bioimage.modelrunner.apposed.appose.Types;
-import io.bioimage.modelrunner.apposed.appose.Service.Task;
-import io.bioimage.modelrunner.apposed.appose.Service.TaskStatus;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptor;
 import io.bioimage.modelrunner.bioimageio.description.ModelDescriptorFactory;
 import io.bioimage.modelrunner.download.FileDownloader;
@@ -65,6 +61,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apposed.appose.Service;
+import org.apposed.appose.Service.Task;
+import org.apposed.appose.Service.TaskStatus;
+import org.apposed.appose.TaskException;
+import org.apposed.appose.util.Messages;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.framework.MetaGraphDef;
@@ -190,8 +191,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		if (interprocessing) {
 			try {
 				launchModelLoadOnProcess();
-			} catch (IOException | InterruptedException e) {
-				throw new LoadModelException(Types.stackTrace(e));
+			} catch (IOException | InterruptedException | TaskException e) {
+				throw new LoadModelException(Messages.stackTrace(e));
 			}
 			return;
 		}
@@ -208,11 +209,11 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		}
 		catch (InvalidProtocolBufferException e) {
 			closeModel();
-			throw new LoadModelException(Types.stackTrace(e));
+			throw new LoadModelException(Messages.stackTrace(e));
 		}
 	}
 	
-	private void launchModelLoadOnProcess() throws IOException, InterruptedException {
+	private void launchModelLoadOnProcess() throws IOException, InterruptedException, TaskException {
 		HashMap<String, Object> args = new HashMap<String, Object>();
 		args.put("modelFolder", modelFolder);
 		Task task = runner.task("loadModel", args);
@@ -357,7 +358,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			} catch (IllegalArgumentException ex) {
 				for (org.tensorflow.Tensor<?> tt : resultPatchTensors)
 					tt.close();
-				throw new RunModelException(Types.stackTrace(ex));
+				throw new RunModelException(Messages.stackTrace(ex));
 			}
 		}
 		return rais;
@@ -370,7 +371,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		List<org.tensorflow.Tensor<?>> inTensors = new ArrayList<org.tensorflow.Tensor<?>>();
 		int c = 0;
 		for (String ee : inputs) {
-			Map<String, Object> decoded = Types.decode(ee);
+			Map<String, Object> decoded = Messages.decode(ee);
 			SharedMemoryArray shma = SharedMemoryArray.read((String) decoded.get(MEM_NAME_KEY));
 			org.tensorflow.Tensor<?> inT = io.bioimage.modelrunner.tensorflow.v1.shm.TensorBuilder.build(shma);
 			if (PlatformDetection.isWindows()) shma.close();
@@ -381,14 +382,14 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		
 		c = 0;
 		for (String ee : outputs)
-			runner = runner.fetch(getModelOutputName((String) Types.decode(ee).get(NAME_KEY), c ++));
+			runner = runner.fetch(getModelOutputName((String) Messages.decode(ee).get(NAME_KEY), c ++));
 		// Run runner
 		List<org.tensorflow.Tensor<?>> resultPatchTensors = runner.run();
 
 		// Fill the agnostic output tensors list with data from the inference result
 		c = 0;
 		for (String ee : outputs) {
-			Map<String, Object> decoded = Types.decode(ee);
+			Map<String, Object> decoded = Messages.decode(ee);
 			ShmBuilder.build((org.tensorflow.Tensor<?>) resultPatchTensors.get(c ++), (String) decoded.get(MEM_NAME_KEY));
 		}
 		// Close the remaining resources
@@ -407,7 +408,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			new ArrayList<org.tensorflow.Tensor<?>>();
 		int c = 0;
 		for (String ee : inputs) {
-			Map<String, Object> decoded = Types.decode(ee);
+			Map<String, Object> decoded = Messages.decode(ee);
 			SharedMemoryArray shma = SharedMemoryArray.read((String) decoded.get(MEM_NAME_KEY));
 			org.tensorflow.Tensor<?> inT = io.bioimage.modelrunner.tensorflow.v1.shm.TensorBuilder.build(shma);
 			if (PlatformDetection.isWindows()) shma.close();
@@ -465,7 +466,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 				throw new RuntimeException(task.error);
 			}
 			for (int i = 0; i < outputTensors.size(); i ++) {
-	        	String name = (String) Types.decode(encOuts.get(i)).get(MEM_NAME_KEY);
+	        	String name = (String) Messages.decode(encOuts.get(i)).get(MEM_NAME_KEY);
 	        	SharedMemoryArray shm = shmaOutputList.stream()
 	        			.filter(ss -> ss.getName().equals(name)).findFirst().orElse(null);
 	        	if (shm == null) {
@@ -479,7 +480,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			closeShmas();
 			if (e instanceof RunModelException)
 				throw (RunModelException) e;
-			throw new RunModelException(Types.stackTrace(e));
+			throw new RunModelException(Messages.stackTrace(e));
 		}
 		closeShmas();
 	}
@@ -518,7 +519,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			List<String> outputs = (List<String>) task.outputs.get("encoded");
 			List<RandomAccessibleInterval<R>> rais = new ArrayList<RandomAccessibleInterval<R>>();
 			for (String out : outputs) {
-	        	String name = (String) Types.decode(out).get(MEM_NAME_KEY);
+	        	String name = (String) Messages.decode(out).get(MEM_NAME_KEY);
 	        	SharedMemoryArray shm = SharedMemoryArray.read(name);
 	        	RandomAccessibleInterval<R> rai = shm.getSharedRAI();
 	        	rais.add(Tensor.createCopyOfRaiInWantedDataType(Cast.unchecked(rai), Util.getTypeFromInterval(Cast.unchecked(rai))));
@@ -530,7 +531,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			closeShmas();
 			if (e instanceof RunModelException)
 				throw (RunModelException) e;
-			throw new RunModelException(Types.stackTrace(e));
+			throw new RunModelException(Messages.stackTrace(e));
 		}
 	}
 	
@@ -550,7 +551,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		} catch (Exception e) {
 			if (e instanceof RunModelException)
 				throw (RunModelException) e;
-			throw new RunModelException(Types.stackTrace(e));
+			throw new RunModelException(Messages.stackTrace(e));
 		}
 	}
 	
@@ -558,21 +559,17 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 		if (!PlatformDetection.isWindows())
 			return;
 		this.shmaNamesList.stream().forEach(nn -> {
-			try {
-				SharedMemoryArray.read(nn).close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			SharedMemoryArray.read(nn).close();
 		});
 	}
 	
 	private void closeShmas() throws RunModelException {
 		shmaInputList.forEach(shm -> {
-			try { shm.close(); } catch (IOException e1) { e1.printStackTrace();}
+			shm.close();
 		});
 		shmaInputList = null;
 		shmaOutputList.forEach(shm -> {
-			try { shm.close(); } catch (IOException e1) { e1.printStackTrace();}
+			shm.close();
 		});
 		shmaOutputList = null;
 		if (interprocessing)
@@ -645,7 +642,7 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			try {
 				outputTensors.get(i).setData(ImgLib2Builder.build(outputNDArrays.get(i)));
 			} catch (IllegalArgumentException ex) {
-				throw new RunModelException(Types.stackTrace(ex));
+				throw new RunModelException(Messages.stackTrace(ex));
 			}
 		}
 	}
@@ -664,8 +661,8 @@ public class Tensorflow1Interface implements DeepLearningEngineInterface {
 			try {
 				task = runner.task("close");
 				task.waitFor();
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(Types.stackTrace(e));
+			} catch (InterruptedException | TaskException e) {
+				throw new RuntimeException(Messages.stackTrace(e));
 			}
 			if (task.status == TaskStatus.CANCELED)
 				throw new RuntimeException();
